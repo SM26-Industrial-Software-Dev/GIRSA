@@ -1,0 +1,27 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# 1. Install system utilities and clean up cache in the same layer
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  build-essential \
+  && rm -rf /var/lib/apt/lists/*
+
+# 2. Install heavy dependencies (PyTorch CPU first, then remaining stack)
+RUN pip install --no-cache-dir --upgrade pip && \
+  pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu && \
+  pip install --no-cache-dir fastapi uvicorn faiss-cpu sentence-transformers numpy
+
+# 3. Copy your FastAPI application file
+COPY main.py /app/main.py
+
+# 4. COPY THE DATASET DIRECTLY IN
+# Place these heavy lines at the bottom so changes to your server.py file 
+# don't force Docker to re-copy 14+ GB of data layers during code edits.
+COPY sefaria.db /app/sefaria.db
+COPY sefaria.index /app/sefaria.index
+COPY sefaria.index.idmap.npy /app/sefaria.index.idmap.npy
+
+EXPOSE 8000
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
