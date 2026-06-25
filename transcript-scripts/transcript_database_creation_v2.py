@@ -4,33 +4,29 @@ build_db.py
 Ingests Sofer.Ai transcript json files into SQLite database
 organized into 4 databases:
     1) full text
-    2) split into sentances
+    2) split into sentences
     3) split into words
     4) set up for linking citations
 
 """
 
-
 import sqlite3
+import logging
 import json
 import re
 from pathlib import Path
 
-# Initilize databases
-connection1 = sqlite3.connect("transcripts_full_text.db")
-cursor1 = connection1.cursor()
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s  %(levelname)-8s  %(message)s",
+    datefmt="%H:%M:%S",
+)
+log = logging.getLogger(__name__)
 
-connection2 = sqlite3.connect("transcripts_sentances.db")
-cursor2 = connection2.cursor()
-
-connection3 = sqlite3.connect("transcripts_words.db")
-cursor3 = connection3.cursor()
-
-connection4 = sqlite3.connect("transcripts_citations.db")
-cursor4 = connection4.cursor()
-
-# create tables
-table1 = """CREATE TABLE IF NOT EXISTS full_transcripts(
+# Schema creation
+def create_schema(conn: sqlite3.Connection):
+    conn.execute("""
+    CREATE TABLE IF NOT EXISTS full_transcripts(
         id TEXT PRIMARY KEY,
         title TEXT,
         text TEXT,
@@ -40,156 +36,168 @@ table1 = """CREATE TABLE IF NOT EXISTS full_transcripts(
         lang_for_hebrew_words TEXT,
         link TEXT,
         shiur_id INTEGER
-    )"""
+    );""")
 
-connection1.commit()
-cursor1.execute(table1)
-
-table2 = """CREATE TABLE IF NOT EXISTS transcript_sentances(
+    conn.execute("""
+    CREATE TABLE IF NOT EXISTS transcript_sentences(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        transcript_id Text REFERENCES full_transcripts(id),
+        transcript_id TEXT REFERENCES full_transcripts(id),
         sentance TEXT,
         sentance_index INTEGER,
-        total_sentances INTEGER
-    )"""
+        total_sentences INTEGER
+    );""")
 
-cursor2.execute(table2)
-connection2.commit()
-
-table3 = """CREATE TABLE IF NOT EXISTS transcript_words(
+    conn.execute("""
+    CREATE TABLE IF NOT EXISTS transcript_words(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        transcript_id Text REFERENCES full_transcripts(id),
+        transcript_id TEXT REFERENCES full_transcripts(id),
         word TEXT,
         hebrew_format TEXT,
         word_index INTEGER,
         total_words INTEGER
-    )"""
+    );""")
 
-cursor3.execute(table3)
-connection3.commit()
-
-table4 = """CREATE TABLE IF NOT EXISTS transcripts_citations(
+    conn.execute("""
+    CREATE TABLE IF NOT EXISTS transcripts_citations(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        transcript_id Text REFERENCES full_transcripts(id),
+        transcript_id TEXT REFERENCES full_transcripts(id),
         start_word_index INTEGER,
         end_word_index INTEGER,
         citing_text TEXT,
         source_text TEXT,
         sefaria_url TEXT
-    )"""
+    );""")
 
-cursor4.execute(table4)
-connection4.commit()
+    conn.commit()
 
-# itterate through .json files
-directory = Path("./transcripts")
+def fill_db(conn: sqlite3.Connection, transcripts_dir: Path):
 
-file_count = 0
+    """
+    Walk the cltk-full directory tree and ingest every JSON text file.
+    Hyper-optimized for file transaction batch boundaries and raw performance.
+    """
+    log.info("Ingesting texts from %s", transcripts_dir)
+    files = list(transcripts_dir.rglob("*.json"))
+    log.info("Found %d transcript text files", len(files))
 
-for path in directory.iterdir():
-    if path.is_file() and path.suffix == ".json":
-        with open(path, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            try:
-                with connection1, connection2, connection3:
+    cur = conn.cursor()
 
-                    # save reused parts of json in memory
-                    transcript_id = data["id"]
-                    full_text = data["text"]
+    for file_num, fpath in enumerate(files, start=1):
+        try:
+            with open(fpath, encoding="utf-8") as f:
+                data = json.load(f)
+        except Exception as e:
+            log.warning("Could not read %s: %s", fpath, e)
+            continue
 
-                    # full transcript database creation
-                    # get language for hebrew words
-                    lang_list = data.get("lang_for_hebrew_words", [])
-                    if isinstance(lang_list, list):
-                        lang_for_hebrew_words = ",".join(lang_list)
-                    else:
-                        lang_for_hebrew_words = str(lang_list)
+        try:
+            with conn:
+                # save reused parts of json in memory
+                transcript_id = data["id"]
+                full_text = data["text"]
+                title = data["title"]
 
-                    # insert full transcript
-                    comand = """INSERT INTO full_transcripts(
-                            id,
-                            title,
-                            text,
-                            language,
-                            duration,
-                            num_speakers,
-                            lang_for_hebrew_words,
-                            link,
-                            shiur_id
-                        ) VALUES (?,?,?,?,?,?,?,?,?)"""
+                # full transcript database creation
+                # get language for hebrew words
+                lang_list = data.get("lang_for_hebrew_words", [])
+                if isinstance(lang_list, list):
+                    lang_for_hebrew_words = ",".join(lang_list)
+                else:
+                    lang_for_hebrew_words = str(lang_list)
 
-                    insert = (
-                        transcript_id,
-                        data["title"],
-                        full_text,
-                        data["primary_language"],
-                        data["duration"],
-                        data["num_speakers"],
+                # insert full transcript
+                comand = """INSERT INTO full_transcripts(
+                        id,
+                        title,
+                        text,
+                        language,
+                        duration,
+                        num_speakers,
                         lang_for_hebrew_words,
-                        data["link"],
-                        data["shiur_id"],
-                    )
+                        link,
+                        shiur_id
+                    ) VALUES (?,?,?,?,?,?,?,?,?)"""
 
-                    cursor1.execute(comand, insert)
+                insert = (
+                    transcript_id,
+                    title,
+                    full_text,
+                    data["primary_language"],
+                    data["duration"],
+                    data["num_speakers"],
+                    lang_for_hebrew_words,
+                    data["link"],
+                    data["shiur_id"],
+                )
 
-                    # sentances database creation
-                    # split into sentances
-                    sentences = re.split(r"(?<=[?.])\s+", full_text)
-                    sentance_length = len(sentences)
+                cur.execute(comand, insert)
 
-                    for index, sentance in enumerate(sentences, start=1):
+                # sentences database creation
+                # split into sentences
+                sentences = re.split(r"(?<=[?.])\s+", full_text)
+                sentance_length = len(sentences)
 
-                        # insert sentances
-                        comand = """INSERT INTO transcript_sentances(
-                                transcript_id,
-                                sentance,
-                                sentance_index,
-                                total_sentances
-                            ) VALUES (?,?,?,?)"""
+                for index, sentance in enumerate(sentences, start=1):
 
-                        insert = (transcript_id, sentance, index, sentance_length)
+                    # insert sentences
+                    comand = """INSERT INTO transcript_sentences(
+                            transcript_id,
+                            sentance,
+                            sentance_index,
+                            total_sentences
+                        ) VALUES (?,?,?,?)"""
 
-                        cursor2.execute(comand, insert)
+                    insert = (transcript_id, sentance, index, sentance_length)
 
-                    # word database creation
-                    # split into words
-                    words = re.split(r"\s+", full_text)
-                    words_length = len(words)
+                    cur.execute(comand, insert)
 
-                    for index, word in enumerate(words, start=1):
+                # word database creation
+                # split into words
+                words = re.split(r"\s+", full_text)
+                words_length = len(words)
 
-                        # check language
-                        if bool(re.search(r"[\u0590-\u05FF]", word)):
-                            language = "he"
-                        elif "<i>" in word:
-                            language = "hybrid"
-                        else:
-                            language = "en"
+                for index, word in enumerate(words, start=1):
 
-                        # insert words
-                        comand = """INSERT INTO transcript_words(
-                                transcript_id,
-                                word,
-                                hebrew_format,
-                                word_index,
-                                total_words
-                            ) VALUES (?,?,?,?,?)"""
+                    # check language
+                    if bool(re.search(r"[\u0590-\u05FF]", word)):
+                        language = "he"
+                    elif "<i>" in word:
+                        language = "hybrid"
+                    else:
+                        language = "en"
 
-                        insert = (transcript_id, word, language, index, words_length)
+                    # insert words
+                    comand = """INSERT INTO transcript_words(
+                            transcript_id,
+                            word,
+                            hebrew_format,
+                            word_index,
+                            total_words
+                        ) VALUES (?,?,?,?,?)"""
+                    insert = (transcript_id, word, language, index, words_length)
 
-                        cursor3.execute(comand, insert)
+                    cur.execute(comand, insert)
 
-                    file_count += 1
+                if file_num % 50 == 0:
+                    log.info("Prossesed shiur: %s, %s", file_num, title)
 
-                print(f"{file_count} {data["title"]}")
+        except sqlite3.Error as e:
+            log.warning("Error inserting content %s: %s", fpath, e)
+            continue
 
-            except sqlite3.Error as e:
-                print(f"Database error while processing {path.name}: {e}")
+def main():
+    transcripts_dir = Path("./transcripts")
 
-# save table
-connection1.close()
-connection2.close()
-connection3.close()
-connection4.close()
+    conn = sqlite3.connect("transcripts.db")
+    create_schema(conn)
 
-print(f"\nSuccessfully added {file_count:,} shiurim to the databases.")
+    if not transcripts_dir.exists():
+        log.error("transcripts/ directory not found under")
+    else:
+        fill_db(conn, transcripts_dir)
+
+    conn.close()
+    log.info("Done. Database written to %s", "transcripts.db")
+
+if __name__ == "__main__":
+    main()
