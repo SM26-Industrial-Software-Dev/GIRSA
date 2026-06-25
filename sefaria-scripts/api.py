@@ -116,17 +116,17 @@ class SefariaSearcher:
                 continue
 
             if addresses and len(addresses) == 4:
-                ra1 = row["addr1"] if row["addr1"] is not None else "-1"
-                ra2 = row["addr2"] if row["addr2"] is not None else "-1"
-                ra3 = row["addr3"] if row["addr3"] is not None else "-1"
-                ra4 = row["addr4"] if row["addr4"] is not None else "-1"
-                if addresses[0] != "-1" and addresses[0] != ra1:
+                ra1 = row["addr1"] if row["addr1"] is not None else -1
+                ra2 = row["addr2"] if row["addr2"] is not None else -1
+                ra3 = row["addr3"] if row["addr3"] is not None else -1
+                ra4 = row["addr4"] if row["addr4"] is not None else -1
+                if addresses[0] != -1 and addresses[0] != ra1:
                     continue
-                if addresses[1] != "-1" and addresses[1] != ra2:
+                if addresses[1] != -1 and addresses[1] != ra2:
                     continue
-                if addresses[2] != "-1" and addresses[2] != ra3:
+                if addresses[2] != -1 and addresses[2] != ra3:
                     continue
-                if addresses[3] != "-1" and addresses[3] != ra4:
+                if addresses[3] != -1 and addresses[3] != ra4:
                     continue
 
             boost = 1.0
@@ -241,7 +241,7 @@ class SearchRequest(BaseModel):
     category_filter: Optional[str] = None
     unique: Optional[bool] = False
     weighted: Optional[bool] = False
-    addresses: Optional[list[str]] = ["-1", "-1", "-1", "-1"]
+    addresses: Optional[list[int]] = [-1, -1, -1, -1]
 
 
 class SearchResult(BaseModel):
@@ -257,10 +257,10 @@ class SearchResult(BaseModel):
     version_title: str
     text: str
     chunk_index: int
-    addr1: Optional[str] = None
-    addr2: Optional[str] = None
-    addr3: Optional[str] = None
-    addr4: Optional[str] = None
+    addr1: Optional[int] = None
+    addr2: Optional[int] = None
+    addr3: Optional[int] = None
+    addr4: Optional[int] = None
 
 
 class SearchResponse(BaseModel):
@@ -388,7 +388,7 @@ if __name__ == "__main__":
         print(f"Index file not found: {args.index}")
         exit(1)
 
-    addresses = args.addrs.split(".")
+    addresses = [int(x) for x in args.addrs.split(".")]
     # Initialize a short-lived instance directly for the terminal session
     cli_searcher = SefariaSearcher(args.db, args.index, args.model)
     results = cli_searcher.search(
