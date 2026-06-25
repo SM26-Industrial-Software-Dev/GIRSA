@@ -95,10 +95,10 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_version_unique ON versions(book_id, versio
 CREATE TABLE IF NOT EXISTS passages (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     book_id     TEXT NOT NULL REFERENCES books(id) ON DELETE CASCADE,
-    addr1       TEXT,   -- outermost address (chapter, daf, paragraph …)
-    addr2       TEXT,   -- next level (verse, line, halacha …)
-    addr3       TEXT,   -- third level (comment index, …)
-    addr4       TEXT,   -- fourth level (rare)
+    addr1       INTEGER,   -- outermost address (chapter, daf, paragraph …)
+    addr2       INTEGER   -- next level (verse, line, halacha …)
+    addr3       INTEGER,   -- third level (comment index, …)
+    addr4       INTEGER,   -- fourth level (rare)
     sefaria_ref TEXT UNIQUE NOT NULL  -- e.g. "Yoma 2a:1", "Genesis 1:1"
 );
 CREATE INDEX IF NOT EXISTS idx_passages_book  ON passages(book_id);
@@ -542,10 +542,10 @@ def ingest_texts(conn: sqlite3.Connection, cltk_dir: Path):
                     """,
                     (
                         book_title,
-                        str(addr_vals[0]) if addr_vals[0] is not None else None,
-                        str(addr_vals[1]) if addr_vals[1] is not None else None,
-                        str(addr_vals[2]) if addr_vals[2] is not None else None,
-                        str(addr_vals[3]) if addr_vals[3] is not None else None,
+                        addr_vals[0] if addr_vals[0] is not None else None,
+                        addr_vals[1] if addr_vals[1] is not None else None,
+                        addr_vals[2] if addr_vals[2] is not None else None,
+                        addr_vals[3] if addr_vals[3] is not None else None,
                         sefaria_ref,
                     ),
                 )
