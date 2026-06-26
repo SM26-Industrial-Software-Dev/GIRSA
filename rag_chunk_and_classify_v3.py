@@ -7,6 +7,8 @@ import os
 from dotenv import load_dotenv
 import sys
 
+# Add number at end to choose how many transcripts to chunk. Ex: python3 rag_chunk_and_classify.py 5
+
 load_dotenv()
 
 # Use your own Groq API key.
