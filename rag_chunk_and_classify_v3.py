@@ -221,20 +221,16 @@ def classify_single_chunk(current_text: str, previous_text: str | None) -> dict:
         "current_chunk": current_text,
         "previous_chunk": previous_text,
     }
-    try:
-        completion = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT_2},
-                {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
-            ],
-            response_format={"type": "json_object"},
-            temperature=0.0,  # Fully deterministic
-        )
-        return json.loads(completion.choices[0].message.content)
-    except Exception as e:
-        print(f"❌ Classification failed for chunk: {e}")
-        return None
+    completion = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT_2},
+            {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
+        ],
+        response_format={"type": "json_object"},
+        temperature=0.0,  # Fully deterministic
+    )
+    return json.loads(completion.choices[0].message.content)
 
 
 def classify_chunks_sequentially(prepared_chunks: list) -> list:
@@ -248,19 +244,18 @@ def classify_chunks_sequentially(prepared_chunks: list) -> list:
             current_text=chunk["text"], previous_text=previous_text
         )
 
-        if result is not None:
-            source = result.get("source_in_current")
-            classification = result.get("classification", 2)
+        source = result.get("source_in_current")
+        classification = result.get("classification", 2)
 
-            results.append(
-                {
-                    "chunk_index": chunk["chunk_index"],
-                    "text": chunk["text"],
-                    "classification": classification,
-                    "reasoning": result.get("reasoning", ""),
-                    "source_in_current": source,
-                }
-            )
+        results.append(
+            {
+                "chunk_index": chunk["chunk_index"],
+                "text": chunk["text"],
+                "classification": classification,
+                "reasoning": result.get("reasoning", ""),
+                "source_in_current": source,
+            }
+        )
 
         previous_text = chunk["text"]
         time.sleep(0.5)  # Avoid rate limits
@@ -368,11 +363,14 @@ def main(num_of_transcripts: int = 1):
     OUTPUT_DB_PATH = "classified_chunks.db"
     start_time = time.time()
 
+    # Clear or initialize the output file once at the beginning of the run
+    with open("output.txt", "w", encoding="utf-8") as f:
+        f.write("=== RUN START ===\n")
+
     try:
         dict_of_transcripts = fetch_transcript_from_db(
             INPUT_DB_PATH, OUTPUT_DB_PATH, num_of_transcripts
         )
-        all_chunks = []
 
         for i, (transcript_id, transcript_text) in enumerate(
             dict_of_transcripts.items()
@@ -385,41 +383,73 @@ def main(num_of_transcripts: int = 1):
             )
             print(f"{'=' * 50}")
 
-            final_chunks = generate_conceptual_chunks(transcript_text)
-            for chunk in final_chunks:
-                chunk["transcript_id"] = transcript_id
+            try:
+                # 1. Run optimization and sequential classification
+                final_chunks = generate_conceptual_chunks(transcript_text)
 
-            all_chunks.extend(final_chunks)
+                # Double-check that we actually got chunks back
+                # (If an LLM failure occurred inside, it might return empty/None)
+                if not final_chunks:
+                    print(
+                        f"⚠️ Skipping saving for Transcript {transcript_id}: No valid chunks returned."
+                    )
+                    continue
 
-        print("\n\n================ FINAL OUTPUT ================")
-        # Open output.txt in write mode with UTF-8 encoding for Torah text safety
-        with open("output.txt", "w", encoding="utf-8") as f:
-            for chunk in all_chunks:
-                word_count = len(chunk.get("text", "").split())
-                label = {
-                    0: "🆕 New Source",
-                    1: "➡️  Continuation",
-                    2: "💬 Commentary",
-                }.get(chunk["classification"], "❓ Unknown")
+                # 2. Prepare chunk data
+                for chunk in final_chunks:
+                    chunk["transcript_id"] = transcript_id
 
-                # Use the 'file' argument in print to route output to your text file
-                f.write(
-                    f"\n🏷️  Chunk {chunk['chunk_index']} | {word_count} words | {label} (Class {chunk['classification']})\n"
-                )
-                f.write(f"📚 Source: {chunk.get('source_in_current') or 'None'}\n")
-                f.write(f"🧠 Reasoning: {chunk['reasoning']}\n")
-                f.write(f"📜 Text: {chunk['text']}\n")
-                f.write("-" * 50 + "\n")
+                # 3. Append to output file (Changed 'w' to 'a')
+                with open("output.txt", "a", encoding="utf-8") as f:
+                    f.write(
+                        f"\n================ TRANSCRIPT ID: {transcript_id} ================\n"
+                    )
+                    for chunk in final_chunks:
+                        word_count = len(chunk.get("text", "").split())
+                        label = {
+                            0: "🆕 New Source",
+                            1: "➡️  Continuation",
+                            2: "💬 Commentary",
+                        }.get(chunk["classification"], "❓ Unknown")
 
-        print("📝 Final evaluation successfully written to 'output.txt'")
+                        f.write(
+                            f"\n🏷️  Chunk {chunk['chunk_index']} | {word_count} words | {label} (Class {chunk['classification']})\n"
+                        )
+                        f.write(
+                            f"📚 Source: {chunk.get('source_in_current') or 'None'}\n"
+                        )
+                        f.write(f"🧠 Reasoning: {chunk['reasoning']}\n")
+                        f.write(f"📜 Text: {chunk['text']}\n")
+                        f.write("-" * 50 + "\n")
 
-        print(f"\n📡 Step 4: Saving to database...")
-        save_chunks_to_db(all_chunks, OUTPUT_DB_PATH)
+                print("📝 Transcript evaluation appended to 'output.txt'")
+
+                # 4. Save to database (Only happens if everything above succeeded completely)
+                print("📡 Saving to database...")
+                save_chunks_to_db(final_chunks, OUTPUT_DB_PATH)
+
+            except Exception as loop_error:
+                # Catching Rate Limits / API Failures specific to this transcript iteration
+                error_msg = str(loop_error).lower()
+                if "rate limit" in error_msg or "429" in error_msg:
+                    print(
+                        f"\n🛑 Rate limit encountered during transcript {transcript_id}!"
+                    )
+                    print("Breaking loop completely to avoid further blocked requests.")
+                    break  # Stop processing any more transcripts
+                else:
+                    print(
+                        f"\n❌ Error processing transcript {transcript_id}: {loop_error}"
+                    )
+                    print(
+                        "Skipping database entry for this transcript and moving to next..."
+                    )
+                    continue  # Try the next transcript if it wasn't a rate-limit error
 
         print(f"\n⏱️  Total time: {time.time() - start_time:.2f}s")
 
     except Exception as e:
-        print(f"Error in main: {e}")
+        print(f"Error in main outer block: {e}")
         raise
 
 
