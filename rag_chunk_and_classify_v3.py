@@ -35,12 +35,11 @@ def fetch_transcript_from_db(input_db_path: str, output_db_path: str, num_of_tra
     conn = sqlite3.connect(input_db_path)
     cursor = conn.cursor()
     
-    # Select all rows to search for unused transcripts (we should try to figure out faster approach later)
     cursor.execute("SELECT id, text FROM full_transcripts")
     
     new_transcripts = {}
     
-    # Loop through rows one by one until we have enough new transcripts
+    # Loop through rows one by one until we have enough unused transcripts
     while len(new_transcripts) < num_of_transcripts:
         row = cursor.fetchone()
         if not row:
@@ -224,11 +223,7 @@ def classify_single_chunk(current_text: str, previous_text: str | None) -> dict:
         return json.loads(completion.choices[0].message.content)
     except Exception as e:
         print(f"❌ Classification failed for chunk: {e}")
-        return {
-            "classification": 2,
-            "reasoning": "Fallback — API error.",
-            "source_in_current": None,
-        }
+        return None
 
 
 def classify_chunks_sequentially(prepared_chunks: list) -> list:
@@ -243,16 +238,18 @@ def classify_chunks_sequentially(prepared_chunks: list) -> list:
             previous_text=previous_text
         )
 
-        source = result.get("source_in_current")
-        classification = result.get("classification", 2)
+        if result is not None:
 
-        results.append({
-            "chunk_index": chunk["chunk_index"],
-            "text": chunk["text"],
-            "classification": classification,
-            "reasoning": result.get("reasoning", ""),
-            "source_in_current": source
-        })
+            source = result.get("source_in_current")
+            classification = result.get("classification", 2)
+
+            results.append({
+                "chunk_index": chunk["chunk_index"],
+                "text": chunk["text"],
+                "classification": classification,
+                "reasoning": result.get("reasoning", ""),
+                "source_in_current": source
+            })
 
         previous_text = chunk["text"]
         time.sleep(0.5)   # Avoid rate limits
@@ -284,6 +281,7 @@ def generate_conceptual_chunks(transcript: str) -> list:
     if not sentences:
         return []
 
+    # Reconstruct text chunks locally in Python (guaranteed correct splitting)
     prepared_chunks = []
     for idx, start_pos in enumerate(boundaries):
         start_idx = max(0, start_pos - 1)
@@ -314,6 +312,7 @@ def save_chunks_to_db(chunks: list, db_path: str = "classified_chunks.db") -> No
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
+    # Standardized to 'transcript_id' to align with verification checks
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS classified_chunks (
             id                INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -374,9 +373,6 @@ def main(num_of_transcripts: int = 1):
             word_count = len(chunk.get("text", "").split())
             label = {0: "🆕 New Source", 1: "➡️  Continuation", 2: "💬 Commentary"}.get(chunk["classification"], "❓ Unknown")
             print(f"\n🏷️  Chunk {chunk['chunk_index']} | {word_count} words | {label} (Class {chunk['classification']})")
-            print(f"📚 Source: {chunk.get('source_in_current') or 'None'}")
-            print(f"🧠 Reasoning: {chunk['reasoning']}")
-            print(f"📜 Text: {chunk['text']}")
             print("-" * 50)
 
         print(f"\n📡 Step 4: Saving to database...")
