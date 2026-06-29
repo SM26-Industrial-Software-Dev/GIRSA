@@ -52,7 +52,8 @@ def fetch_transcript_from_db(
         transcript_id, raw_text = row[0], row[1]
 
         if not is_transcript_already_processed(output_db_path, transcript_id):
-            new_transcripts[transcript_id] = raw_text
+            if len(raw_text.split()) < 5000:
+                new_transcripts[transcript_id] = raw_text
 
     conn.close()
 
