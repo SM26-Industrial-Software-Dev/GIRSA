@@ -15,13 +15,14 @@ client = Groq(api_key="YOUR_API_KEY_HERE")
 # DATABASE
 # ─────────────────────────────────────────────
 
+
 def is_transcript_already_processed(output_db_path: str, transcript_id) -> bool:
     try:
         conn = sqlite3.connect(output_db_path)
         cursor = conn.cursor()
         cursor.execute(
             "SELECT transcript_id FROM classified_chunks WHERE transcript_id = ? LIMIT 1",
-            (transcript_id,)
+            (transcript_id,),
         )
         exists = cursor.fetchone() is not None
         conn.close()
@@ -31,38 +32,43 @@ def is_transcript_already_processed(output_db_path: str, transcript_id) -> bool:
             return False
         raise e
 
-def fetch_transcript_from_db(input_db_path: str, output_db_path: str, num_of_transcripts: int = 1) -> dict:
+
+def fetch_transcript_from_db(
+    input_db_path: str, output_db_path: str, num_of_transcripts: int = 1
+) -> dict:
     conn = sqlite3.connect(input_db_path)
     cursor = conn.cursor()
-    
+
     cursor.execute("SELECT id, text FROM full_transcripts")
-    
+
     new_transcripts = {}
-    
+
     # Loop through rows one by one until we have enough unused transcripts
     while len(new_transcripts) < num_of_transcripts:
         row = cursor.fetchone()
         if not row:
             break  # Reached the absolute end of the database
-            
+
         transcript_id, raw_text = row[0], row[1]
-        
+
         if not is_transcript_already_processed(output_db_path, transcript_id):
             new_transcripts[transcript_id] = raw_text
 
     conn.close()
-    
+
     if not new_transcripts:
         raise ValueError("❌ No unprocessed transcripts remaining in the database!")
-        
+
     if len(new_transcripts) < num_of_transcripts:
-        print(f"⚠️ Warning: only found {len(new_transcripts)}/{num_of_transcripts} unprocessed transcripts.")
-        
+        print(
+            f"⚠️ Warning: only found {len(new_transcripts)}/{num_of_transcripts} unprocessed transcripts."
+        )
+
     cleaned_transcripts = {}
     for transcript_id, text_content in new_transcripts.items():
         clean_text = re.sub(r"<i>|</i>", "", text_content)
         cleaned_transcripts[transcript_id] = clean_text
-        
+
     return cleaned_transcripts
 
 
@@ -88,10 +94,11 @@ Example Output:
 }
 """
 
+
 def split_into_sentences(text: str) -> list:
     if not text:
         return []
-    sentences = re.split(r'(?<=[\.!\?])\s+', text)
+    sentences = re.split(r"(?<=[\.!\?])\s+", text)
     return [s.strip() for s in sentences if s.strip()]
 
 
@@ -140,10 +147,10 @@ def get_chunks(transcript_text: str) -> tuple:
     baseline_boundaries = get_baseline_boundaries(sentences)
     print(f"🔢 Baseline boundaries: {baseline_boundaries}")
 
-    numbered_lines = [f"[{i+1}] {s}" for i, s in enumerate(sentences)]
+    numbered_lines = [f"[{i + 1}] {s}" for i, s in enumerate(sentences)]
     user_data = {
         "candidate_boundaries": baseline_boundaries,
-        "transcript": numbered_lines
+        "transcript": numbered_lines,
     }
 
     try:
@@ -151,10 +158,10 @@ def get_chunks(transcript_text: str) -> tuple:
             model="llama-3.3-70b-versatile",
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT_1},
-                {"role": "user", "content": json.dumps(user_data, ensure_ascii=False)}
+                {"role": "user", "content": json.dumps(user_data, ensure_ascii=False)},
             ],
             response_format={"type": "json_object"},
-            temperature=0.1
+            temperature=0.1,
         )
         raw_json = completion.choices[0].message.content
         parsed = json.loads(raw_json)
@@ -162,7 +169,9 @@ def get_chunks(transcript_text: str) -> tuple:
         print(f"🎯 Optimized boundaries: {boundaries}")
 
     except Exception as e:
-        print(f"❌ LLM boundary optimization failed ({e}). Falling back to math boundaries.")
+        print(
+            f"❌ LLM boundary optimization failed ({e}). Falling back to math boundaries."
+        )
         boundaries = baseline_boundaries
 
     final_boundaries = sorted(list(set([1] + [int(b) for b in boundaries])))
@@ -204,6 +213,7 @@ OUTPUT FORMAT (JSON only, no extra text):
 }
 """
 
+
 def classify_single_chunk(current_text: str, previous_text: str | None) -> dict:
     """Classifies one chunk using the full source history accumulated so far."""
     payload = {
@@ -215,10 +225,10 @@ def classify_single_chunk(current_text: str, previous_text: str | None) -> dict:
             model="llama-3.3-70b-versatile",
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT_2},
-                {"role": "user", "content": json.dumps(payload, ensure_ascii=False)}
+                {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
             ],
             response_format={"type": "json_object"},
-            temperature=0.0   # Fully deterministic
+            temperature=0.0,  # Fully deterministic
         )
         return json.loads(completion.choices[0].message.content)
     except Exception as e:
@@ -234,25 +244,25 @@ def classify_chunks_sequentially(prepared_chunks: list) -> list:
         print(f"  🔍 Classifying chunk {chunk['chunk_index']}")
 
         result = classify_single_chunk(
-            current_text=chunk["text"],
-            previous_text=previous_text
+            current_text=chunk["text"], previous_text=previous_text
         )
 
         if result is not None:
-
             source = result.get("source_in_current")
             classification = result.get("classification", 2)
 
-            results.append({
-                "chunk_index": chunk["chunk_index"],
-                "text": chunk["text"],
-                "classification": classification,
-                "reasoning": result.get("reasoning", ""),
-                "source_in_current": source
-            })
+            results.append(
+                {
+                    "chunk_index": chunk["chunk_index"],
+                    "text": chunk["text"],
+                    "classification": classification,
+                    "reasoning": result.get("reasoning", ""),
+                    "source_in_current": source,
+                }
+            )
 
         previous_text = chunk["text"]
-        time.sleep(0.5)   # Avoid rate limits
+        time.sleep(0.5)  # Avoid rate limits
 
     return results
 
@@ -261,11 +271,16 @@ def classify_chunks_sequentially(prepared_chunks: list) -> list:
 # STEP 3 — POST-PROCESSING VALIDATION
 # ─────────────────────────────────────────────
 
+
 def validate_continuations(classified_chunks: list) -> list:
     validated = []
     for idx, chunk in enumerate(classified_chunks):
-        if chunk["classification"] == 1 and (idx == 0 or classified_chunks[idx - 1]["classification"] == 2):
-            print(f"⚠️ Invalid continuation at chunk {chunk['chunk_index']}. Skipping this chunk...")
+        if chunk["classification"] == 1 and (
+            idx == 0 or classified_chunks[idx - 1]["classification"] == 2
+        ):
+            print(
+                f"⚠️ Invalid continuation at chunk {chunk['chunk_index']}. Skipping this chunk..."
+            )
         else:
             validated.append(chunk)
     return validated
@@ -274,6 +289,7 @@ def validate_continuations(classified_chunks: list) -> list:
 # ─────────────────────────────────────────────
 # ORCHESTRATOR
 # ─────────────────────────────────────────────
+
 
 def generate_conceptual_chunks(transcript: str) -> list:
     print(f"\n📡 Step 1: Mapping Boundaries...")
@@ -285,13 +301,12 @@ def generate_conceptual_chunks(transcript: str) -> list:
     prepared_chunks = []
     for idx, start_pos in enumerate(boundaries):
         start_idx = max(0, start_pos - 1)
-        end_idx = (boundaries[idx + 1] - 1) if idx + 1 < len(boundaries) else len(sentences)
+        end_idx = (
+            (boundaries[idx + 1] - 1) if idx + 1 < len(boundaries) else len(sentences)
+        )
         chunk_text = " ".join(sentences[start_idx:end_idx]).strip()
         if chunk_text:
-            prepared_chunks.append({
-                "chunk_index": idx + 1,
-                "text": chunk_text
-            })
+            prepared_chunks.append({"chunk_index": idx + 1, "text": chunk_text})
 
     time.sleep(2)
 
@@ -308,6 +323,7 @@ def generate_conceptual_chunks(transcript: str) -> list:
 # DATABASE OUTPUT
 # ─────────────────────────────────────────────
 
+
 def save_chunks_to_db(chunks: list, db_path: str = "classified_chunks.db") -> None:
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
@@ -323,19 +339,18 @@ def save_chunks_to_db(chunks: list, db_path: str = "classified_chunks.db") -> No
     """)
 
     rows = [
-        (
-            chunk["transcript_id"],
-            chunk["classification"],
-            chunk["text"]
-        )
+        (chunk["transcript_id"], chunk["classification"], chunk["text"])
         for chunk in chunks
     ]
 
-    cursor.executemany("""
+    cursor.executemany(
+        """
         INSERT INTO classified_chunks
             (transcript_id, classification, text)
         VALUES (?, ?, ?)
-    """, rows)
+    """,
+        rows,
+    )
 
     conn.commit()
     conn.close()
@@ -346,21 +361,28 @@ def save_chunks_to_db(chunks: list, db_path: str = "classified_chunks.db") -> No
 # MAIN
 # ─────────────────────────────────────────────
 
+
 def main(num_of_transcripts: int = 1):
-    INPUT_DB_PATH  = "transcripts_full_text.db"
+    INPUT_DB_PATH = "transcripts_full_text.db"
     OUTPUT_DB_PATH = "classified_chunks.db"
     start_time = time.time()
 
     try:
-        dict_of_transcripts = fetch_transcript_from_db(INPUT_DB_PATH, OUTPUT_DB_PATH, num_of_transcripts)
+        dict_of_transcripts = fetch_transcript_from_db(
+            INPUT_DB_PATH, OUTPUT_DB_PATH, num_of_transcripts
+        )
         all_chunks = []
 
-        for i, (transcript_id, transcript_text) in enumerate(dict_of_transcripts.items()):
+        for i, (transcript_id, transcript_text) in enumerate(
+            dict_of_transcripts.items()
+        ):
             transcript_number = i + 1
 
-            print(f"\n{'='*50}")
-            print(f"📖 Processing transcript {transcript_number} of {len(dict_of_transcripts)}")
-            print(f"{'='*50}")
+            print(f"\n{'=' * 50}")
+            print(
+                f"📖 Processing transcript {transcript_number} of {len(dict_of_transcripts)}"
+            )
+            print(f"{'=' * 50}")
 
             final_chunks = generate_conceptual_chunks(transcript_text)
             for chunk in final_chunks:
@@ -369,23 +391,38 @@ def main(num_of_transcripts: int = 1):
             all_chunks.extend(final_chunks)
 
         print("\n\n================ FINAL OUTPUT ================")
-        for chunk in all_chunks:
-            word_count = len(chunk.get("text", "").split())
-            label = {0: "🆕 New Source", 1: "➡️  Continuation", 2: "💬 Commentary"}.get(chunk["classification"], "❓ Unknown")
-            print(f"\n🏷️  Chunk {chunk['chunk_index']} | {word_count} words | {label} (Class {chunk['classification']})")
-            print("-" * 50)
+        # Open output.txt in write mode with UTF-8 encoding for Torah text safety
+        with open("output.txt", "w", encoding="utf-8") as f:
+            for chunk in all_chunks:
+                word_count = len(chunk.get("text", "").split())
+                label = {
+                    0: "🆕 New Source",
+                    1: "➡️  Continuation",
+                    2: "💬 Commentary",
+                }.get(chunk["classification"], "❓ Unknown")
+
+                # Use the 'file' argument in print to route output to your text file
+                f.write(
+                    f"\n🏷️  Chunk {chunk['chunk_index']} | {word_count} words | {label} (Class {chunk['classification']})\n"
+                )
+                f.write(f"📚 Source: {chunk.get('source_in_current') or 'None'}\n")
+                f.write(f"🧠 Reasoning: {chunk['reasoning']}\n")
+                f.write(f"📜 Text: {chunk['text']}\n")
+                f.write("-" * 50 + "\n")
+
+        print("📝 Final evaluation successfully written to 'output.txt'")
 
         print(f"\n📡 Step 4: Saving to database...")
         save_chunks_to_db(all_chunks, OUTPUT_DB_PATH)
 
-        print(f'\n⏱️  Total time: {time.time() - start_time:.2f}s')
+        print(f"\n⏱️  Total time: {time.time() - start_time:.2f}s")
 
     except Exception as e:
         print(f"Error in main: {e}")
         raise
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     if len(sys.argv) > 1:
         main(int(sys.argv[1]))
     else:
