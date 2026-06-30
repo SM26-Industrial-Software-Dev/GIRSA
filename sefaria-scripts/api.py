@@ -82,11 +82,14 @@ class SefariaSearcher:
         category_filter: str = None,
         unique: bool = False,
         weighted: bool = False,
+        addresses=None,
     ):
         query_vec = self.embed_query(query)
 
         # Over-fetch if filtering, so discarded records don't empty out top-k results
-        fetch_k = 10000 if book_filter or category_filter or unique else top_k
+        fetch_k = (
+            10000 if addresses or book_filter or category_filter or unique else top_k
+        )
 
         scores, positions = self.index.search(query_vec, fetch_k)
         scores = scores[0]
@@ -112,6 +115,20 @@ class SefariaSearcher:
             if unique and row["sefaria_ref"] in seen:
                 continue
 
+            if addresses and len(addresses) == 4:
+                ra1 = row["addr1"] if row["addr1"] is not None else -1
+                ra2 = row["addr2"] if row["addr2"] is not None else -1
+                ra3 = row["addr3"] if row["addr3"] is not None else -1
+                ra4 = row["addr4"] if row["addr4"] is not None else -1
+                if addresses[0] != -1 and addresses[0] != ra1:
+                    continue
+                if addresses[1] != -1 and addresses[1] != ra2:
+                    continue
+                if addresses[2] != -1 and addresses[2] != ra3:
+                    continue
+                if addresses[3] != -1 and addresses[3] != ra4:
+                    continue
+
             boost = 1.0
             if weighted:
                 for cat, multiplier in PRIORITY_BOOSTS.items():
@@ -136,7 +153,7 @@ class SefariaSearcher:
                 c.id, c.text, c.chunk_index,
                 p.sefaria_ref, p.book_id,
                 b.he_title, b.en_title, b.categories,
-                v.language, v.version_title
+                v.language, v.version_title, p.addr1, p.addr2, p.addr3, p.addr4
             FROM chunks c
             JOIN passages p ON c.passage_id = p.id
             JOIN books b ON p.book_id = b.id
@@ -161,6 +178,10 @@ class SefariaSearcher:
             "language": row[8],
             "version_title": row[9],
             "sefaria_url": f"https://www.sefaria.org/{row[3].replace(' ', '_')}",
+            "addr1": row[10],
+            "addr2": row[11],
+            "addr3": row[12],
+            "addr4": row[13],
         }
 
         if category_filter:
@@ -218,8 +239,9 @@ class SearchRequest(BaseModel):
     top_k: int = Field(10, ge=1, le=100)
     book_filter: Optional[str] = None
     category_filter: Optional[str] = None
-    unique: bool = False
-    weighted: bool = False
+    unique: Optional[bool] = False
+    weighted: Optional[bool] = False
+    addresses: Optional[list[int]] = [-1, -1, -1, -1]
 
 
 class SearchResult(BaseModel):
@@ -235,6 +257,10 @@ class SearchResult(BaseModel):
     version_title: str
     text: str
     chunk_index: int
+    addr1: Optional[int] = None
+    addr2: Optional[int] = None
+    addr3: Optional[int] = None
+    addr4: Optional[int] = None
 
 
 class SearchResponse(BaseModel):
@@ -275,6 +301,7 @@ def search_api(req: SearchRequest):
             category_filter=req.category_filter,
             unique=req.unique,
             weighted=req.weighted,
+            addresses=req.addresses,
         )
     except Exception as e:
         log.exception("Search failed for query %r", req.query)
@@ -351,6 +378,7 @@ if __name__ == "__main__":
     parser.add_argument("--category-filter", default=None)
     parser.add_argument("--unique", "-u", action="store_true", default=False)
     parser.add_argument("--weighted", "-w", action="store_true", default=False)
+    parser.add_argument("--addrs", "-a", default="-1.-1.-1.-1")
     args = parser.parse_args()
 
     if not Path(args.db).exists():
@@ -360,6 +388,7 @@ if __name__ == "__main__":
         print(f"Index file not found: {args.index}")
         exit(1)
 
+    addresses = [int(x) for x in args.addrs.split(".")]
     # Initialize a short-lived instance directly for the terminal session
     cli_searcher = SefariaSearcher(args.db, args.index, args.model)
     results = cli_searcher.search(
@@ -369,6 +398,7 @@ if __name__ == "__main__":
         category_filter=args.category_filter,
         unique=args.unique,
         weighted=args.weighted,
+        addresses=addresses,
     )
 
     print(f"\nQuery: {args.query!r}\n")
