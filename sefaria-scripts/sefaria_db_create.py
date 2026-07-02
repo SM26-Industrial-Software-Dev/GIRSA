@@ -529,7 +529,7 @@ def ingest_texts(conn: sqlite3.Connection, cltk_dir: Path):
             )
 
             truncated_coords = coords[:book_depth]
-            addr_vals = truncated_coords + [0] * (4 - len(truncated_coords))
+            addr_vals = truncated_coords + [-1] * (4 - len(truncated_coords))
 
             try:
 
