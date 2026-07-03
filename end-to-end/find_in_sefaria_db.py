@@ -36,7 +36,6 @@ def __calc_similarity(corpus, name, sp):
         if score >= sp:
             results[book_name[0]] = max(__previous(results, book_name), score)
     results = dict(sorted(results.items(), key=lambda x: x[1], reverse=True))
-    print (results, "\n\n\n\n\n\n")
     return list(results.keys())
     
 def __get_names():
@@ -72,8 +71,3 @@ def __previous(results, book_name):
         return results[book_name[0]]
     except (KeyError):
         return 0.0
-
-if __name__ == "__main__":
-    a = "שטראוכלר"
-    find_in_aliases_with_location("pnei moshe", "yerushalmi", "brachot")
-    #print(is_probably_in_aliases_(a))
