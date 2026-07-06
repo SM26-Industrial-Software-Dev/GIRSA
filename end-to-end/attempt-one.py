@@ -26,9 +26,9 @@ def main():
     """
     Get the output of the RAG as an array of lists of dictionaries
     """
-    input = getSources()
+    transcriptInput = getSources()
     output = []
-    for sentence in output:
+    for sentence in transcriptInput:
         if sentence is None:
             output.append(None)
             continue
