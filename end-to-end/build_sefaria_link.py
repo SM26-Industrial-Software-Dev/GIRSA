@@ -5,6 +5,11 @@ def create_link(dict):
     book = dict.get("book")
     addr1 = dict.get("addr1")
     addr2 = dict.get("addr2")
+    
+    if 'a' in addr1 or 'b' in addr1 or 'a' in addr2 or 'b' in addr2:
+        link = f"https://www.sefaria.org/{book}" + f".{addr1}.1"
+        return link
+    
     path = (str(addr1) , str(addr2) , "1", "1")
     conn, curr = connect()
     depth = find_depth(curr, book)
