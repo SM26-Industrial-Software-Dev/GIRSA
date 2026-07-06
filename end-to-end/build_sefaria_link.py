@@ -3,9 +3,9 @@ from find_in_sefaria_db import find_in_aliases
 
 #turns the dict with two addresies into a sefaria link
 def create_link(dict):
-    book = dict.get("book")
-    addr1 = dict.get("addr1")
-    addr2 = dict.get("addr2")
+    book = dict.get("book") if dict.get("book") is not None else "1"
+    addr1 = dict.get("addr1") if dict.get("addr1") is not None else "1"
+    addr2 = dict.get("addr2") if dict.get("addr2") is not None else "1"
 
     book = find_in_aliases(book)[0]
 
