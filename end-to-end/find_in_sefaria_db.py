@@ -52,7 +52,6 @@ def __calc_similarity(corpus, name, sp):
         if score >= sp:
             results[book_name[0]] = max(__previous(results, book_name), score)
     results = dict(sorted(results.items(), key=lambda x: x[1], reverse=True))
-    print (results, "\n\n\n\n\n\n")
     return results
     
 def __get_names():
@@ -74,7 +73,6 @@ def __get_locations(locations):
         results = results + curr.fetchall()
     conn.close()
     return results
-
 
 def __normalize(num):
     if num > 100:
