@@ -37,16 +37,3 @@ def find_depth(curr, book):
         return curr.fetchone()[0]
     except (TypeError):
         return -1
-    
-def main():
-    test_dict = {
-        "book": "giasfasdfasdf",
-        "addr1": "2a",
-        "addr2": 1
-    }
-
-    link = create_link(test_dict)
-    print(link)
-
-if __name__ == "__main__":
-    main()
