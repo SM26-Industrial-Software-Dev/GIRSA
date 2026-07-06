@@ -1,10 +1,13 @@
 import sqlite3
+from find_in_sefaria_db import find_in_aliases
 
 #turns the dict with two addresies into a sefaria link
 def create_link(dict):
     book = dict.get("book")
     addr1 = dict.get("addr1")
     addr2 = dict.get("addr2")
+
+    book = find_in_aliases(book)[0]
 
     path = (str(addr1) , str(addr2) , "1", "1")
     conn, curr = connect()
