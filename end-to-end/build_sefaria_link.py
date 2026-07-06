@@ -6,10 +6,6 @@ def create_link(dict):
     addr1 = dict.get("addr1")
     addr2 = dict.get("addr2")
 
-    if 'a' in str(addr1) or 'b' in str(addr1) or 'a' in str(addr2) or 'b' in str(addr2):
-        link = f"https://www.sefaria.org/{book}" + f".{addr1}.1"
-        return link
-    
     path = (str(addr1) , str(addr2) , "1", "1")
     conn, curr = connect()
     depth = find_depth(curr, book)
@@ -18,7 +14,11 @@ def create_link(dict):
     if depth == -1:
         print(f"ERROR: Book '{book}' not found in database!")
         return None
-
+    
+    if 'a' in str(addr1) or 'b' in str(addr1) or 'a' in str(addr2) or 'b' in str(addr2):
+        link = f"https://www.sefaria.org/{book}" + f".{addr1}.1"
+        return link
+    
     book = book.replace(" ", "_")
     link = f"https://www.sefaria.org/{book}"
     for addr in range(depth):
@@ -37,3 +37,16 @@ def find_depth(curr, book):
         return curr.fetchone()[0]
     except (TypeError):
         return -1
+    
+def main():
+    test_dict = {
+        "book": "giasfasdfasdf",
+        "addr1": "2a",
+        "addr2": 1
+    }
+
+    link = create_link(test_dict)
+    print(link)
+
+if __name__ == "__main__":
+    main()
