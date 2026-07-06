@@ -1,7 +1,11 @@
 import sqlite3
 
-def create_link(book, addr1 = 0, addr2 = 0, addr3 = 0, addr4 = 0):
-    path = (str(addr1 + 1) , str(addr2 + 1) , str(addr3 + 1) , str(addr4 + 1))
+#turns the dict with two addresies into a sefaria link
+def create_link(dict):
+    book = dict.get("book")
+    addr1 = dict.get("addr1")
+    addr2 = dict.get("addr2")
+    path = (str(addr1) , str(addr2) , "1", "1")
     conn, curr = connect()
     depth = find_depth(curr, book)
     conn.close()
