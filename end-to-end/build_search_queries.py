@@ -1,85 +1,55 @@
 from typing import Any
 
 
-def build_search_queries(sentences: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """
-    Convert LLM output into search query payloads.
+def build_search_query(source: dict[str, Any]) -> dict[str, Any]:
+    """Convert LLM output into search query payloads safely handling None values."""
+    # 1. Safely handle book and category strings
+    book = source.get("book") or ""
+    category = source.get("category")
 
-    Input:
-        [
-            {
-                "sentence_id": ...,
-                "original_sentence": "...",
-                "sources_found": [
-                    {
-                        "category": "...",
-                        "book": "...",
-                        "addr1": ...,
-                        "addr2": ...,
-                        "text": "..."
-                    },
-                    ...
-                ]
-            },
-            ...
-        ]
+    # 2. Extract raw addresses
+    raw_addr1 = source.get("addr1")
+    raw_addr2 = source.get("addr2")
 
-    Output:
-        [
-            {
-                "sentence_id": ...,
-                "queries": [
-                    {
-                        "query": "...",
-                        "top_k": 10,
-                        "book_filter": "...",
-                        "category_filter": "...",
-                        "unique": False,
-                        "weighted": True,
-                        "addresses": [addr1, addr2, -1, -1]
-                    },
-                    ...
-                ]
-            },
-            ...
-        ]
-    """
+    # 3. Process addr1 safely
+    if raw_addr1 is not None:
+        if "talmud" in book.lower():
+            # Ensure raw_addr1 is a string before passing to daf_to_talmud_index
+            addr1 = daf_to_talmud_index(str(raw_addr1))
+        else:
+            addr1 = raw_addr1 + 1
+    else:
+        addr1 = -1
 
-    output = []
+    # 4. Process addr2 safely
+    if raw_addr2 is not None:
+        addr2 = raw_addr2 + 1
+    else:
+        addr2 = -1
 
-    for sentence in sentences:
-        queries = []
-
-        for source in sentence.get("sources_found", []):
-            text = source.get("text")
-
-            # Skip sources that don't require an API search.
-            if text is None:
-                continue
-
-            queries.append(
-                {
-                    "query": text,
-                    "top_k": 10,
-                    "book_filter": source.get("book"),
-                    "category_filter": source.get("category"),
-                    "unique": False,
-                    "weighted": True,
-                    "addresses": [
-                        source.get("addr1") if source.get("addr1") is not None else -1,
-                        source.get("addr2") if source.get("addr2") is not None else -1,
-                        -1,
-                        -1,
-                    ],
-                }
-            )
-
-        if queries:
-            output.append(
-                {
-                    "sentence_id": sentence["sentence_id"],
-                    "queries": queries,
-                }
-            )
+    # 5. Construct payload
+    output = {
+        "query": source.get("text"),
+        "top_k": 10,
+        "book_filter": source.get("book"),
+        "category_filter": category,
+        "unique": False,
+        "weighted": True,
+        "addresses": [addr1, addr2, -1, -1],
+    }
 
     return output
+
+
+def daf_to_talmud_index(amud: str) -> int:
+    # Quick guard for empty or invalid strings
+    if not amud or len(amud) < 2:
+        return -1
+
+    try:
+        daf = int(amud[:-1])
+        side = amud[-1].lower()
+        return (daf - 2) * 2 + (2 if side == "b" else 1)
+    except (ValueError, IndexError):
+        return -1
+
