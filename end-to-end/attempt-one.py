@@ -22,7 +22,7 @@ def main():
                 sourceOutput.append(create_link(source))
             else:
                 call = build_search_query(source)
-                best_link = get_best_source_link("sefaria.db", call)
+                best_link = get_best_source_link("http://localhost:8000", call)
                 sourceOutput.append(best_link)
         output[sentenceID] = sourceOutput
     print(output)
