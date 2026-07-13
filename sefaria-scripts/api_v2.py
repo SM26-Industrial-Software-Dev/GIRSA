@@ -68,7 +68,7 @@ def blob_to_vec(b: bytes) -> np.ndarray:
 # ---------------------------------------------------------------------------
 class SefariaSearcher:
     def __init__(self, db_path: str, index_path: str, model_name: str = "LaBSE",
-                 reranker_name: str = "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1"):
+                 reranker_name: str = "BAAI/bge-reranker-v2-m3"):
         self.conn = sqlite3.connect(db_path, check_same_thread=False)
         self.conn.execute("PRAGMA cache_size = -32000")
 
