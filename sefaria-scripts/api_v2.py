@@ -106,7 +106,7 @@ class SefariaSearcher:
         weighted: bool = False,
         addresses=None,
         rerank: bool = True,
-        rerank_pool_size: int = 50,
+        rerank_pool_size: int = 25,
         debug: bool = False,
     ):
         query_vec = self.embed_query(query)
@@ -457,7 +457,7 @@ if __name__ == "__main__":
     parser.add_argument("--weighted", "-w", action="store_true", default=False)
     parser.add_argument("--rerank", action="store_true", default=True)
     parser.add_argument("--no-rerank", dest="rerank", action="store_false")
-    parser.add_argument("--rerank-pool-size", type=int, default=50)
+    parser.add_argument("--rerank-pool-size", type=int, default=25)
     parser.add_argument("--debug", action="store_true", default=False)
     parser.add_argument("--addrs", "-a", default="-1.-1.-1.-1")
     args = parser.parse_args()
