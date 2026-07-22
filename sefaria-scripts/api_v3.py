@@ -2,15 +2,10 @@
 """
 api_v3.py
 
-Unified Sefaria Semantic Search Engine - Bucket Cascade Edition.
-A high-performance refactor that introduces:
-1. Batched SQL Resolution & Metadata Caching
-2. O(1) Bucket-based Tiering (No repeated rescanning)
-3. Adaptive FAISS fetching (starts small, grows if needed)
-4. Continuous Queue-Draining & Bounded CrossEncoder Reranking
+Unified Sefaria Semantic Search Engine - Bucket Cascade Edition
 
 CLI Usage:
-    python api_v3.py --query "In the beginning God created" --book-prefix "Shulchan Arukh" --debug
+    python api_v3.py --query "In the beginning God created" --book-prefix "Shulchan Arukh"
 """
 
 import argparse
@@ -80,7 +75,7 @@ class SefariaSearcher:
         self.chunk_cache = {}
         self.cid_to_book_cache = {}
 
-        # O(1) Precomputed Popularity Tier Map
+        # Precomputed Popularity Tier Map
         self.book_to_rank = {}
         pagerank_path = os.getenv("PAGERANK_PATH", "accurate_sefaria_pagerank.csv")
 
@@ -144,7 +139,7 @@ class SefariaSearcher:
         return result
 
     def _get_metadata(self, cids: list[int]) -> dict[int, dict]:
-        """Fetch full chunk metadata natively batched with a local LRU-like cache."""
+        """Fetch full chunk metadata natively batched with a local cache."""
         result = {}
         missing = []
         for cid in cids:
@@ -350,15 +345,14 @@ class SefariaSearcher:
     ):
         query_vec = self.embed_query(query)
 
-        # Phase 3: Adaptive FAISS fetching logic
         fetch_steps = [4000, 10000, 20000]
 
-        # Global tracking of all completely evaluated (reranked) chunks across tiers/steps
         global_evaluated_chunks = {}
-        # Isolated tracking queue for un-reranked items to prevent scale mixing
+
         unreranked_queue = []
-        # Core cache passed to CrossEncoder to ensure 0 duplicate deep-learning inferences
+
         query_ce_cache = {}
+        
         total_reranked = 0
 
         for fetch_k in fetch_steps:
