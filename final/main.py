@@ -1,4 +1,5 @@
 from HebrewTransliterationEngine import HebrewTransliterationEngine
+from bs4 import BeautifulSoup
 
 # from process_text import process_sentence
 from CitationClassifier import CitationClassifier
@@ -45,7 +46,41 @@ def find_links(transcript: str):
             # Any source path containing "Daf" must become a addr1 gemara ref
     for sentence in citation_sentences:
         # API calls to check against the source field and extracted data
+    # convert to html with footnotes
+    return merge_footnotes()
 
+def merge_footnotes(sentences, citation_sentences):
+    if len(sentences) != len(citation_sentences):
+        raise RuntimeError("citation_sentences must contain the same number of sentences as the original text") 1
+
+    if not isinstance(citation_sentences, list):
+        raise TypeError("citation_sentences must be a list")
+        
+    for index, item in enumerate(citation_sentences):
+        if not isinstance(item, dict):
+            raise TypeError(f"Item at index {index} in citation_sentences must be a dictionary")
+        if "link" not in item:
+            raise KeyError(f"Dictionary at index {index} in citation_sentences is missing the required 'link' key")
+        
+    processed_sentences = []
+    footnotes = []
+    footnote_count = 1
+
+    for index, text in enumerate(sentences):
+        links = citation_sentences[index]["link"]
+        
+        for link in links:
+            text += f'<sup><a href="#fn{footnote_count}">[{footnote_count}]</a></sup>'
+            footnotes.append(f'<li id="fn{footnote_count}">{link}</li>')
+            footnote_count += 1
+            
+        processed_sentences.append(text)
+
+    final_html = f"<p>{' '.join(processed_sentences)}</p>\n<hr>\n<ol>\n"
+    final_html += "\n".join(footnotes)
+    final_html += "\n</ol>"
+    
+    return BeautifulSoup(final_html, "html.parser")
 
 def main():
     transcript = """
