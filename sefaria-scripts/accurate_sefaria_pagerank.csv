@@ -135,7 +135,6 @@ Rank,Book Title,PageRank Score
 134,Jerusalem Talmud Shekalim,0.0007771581098899166
 135,"Zohar, Vayakhel",0.0007738373331682879
 136,Mishnah Sheviit,0.0007729967135024631
-137,Notes by Rabbi Yehoshua Hartman on Tiferet Yisrael,0.0007719485048000508
 138,Tosefta Pesachim,0.0007700347930056726
 139,Makkot,0.0007633402863991118
 140,Jerusalem Talmud Pesachim,0.000762770941045625
@@ -151,11 +150,9 @@ Rank,Book Title,PageRank Score
 150,Jerusalem Talmud Megillah,0.0007095897713137704
 151,Mishnah Eduyot,0.0007064560609485026
 152,Mishnah Sukkah,0.0007010723503176557
-153,"Notes by Rabbi Yehoshua Hartman on Netivot Olam, Netiv Hatorah",0.0006954212977084589
 154,Jerusalem Talmud Peah,0.0006951527418876847
 155,Jerusalem Talmud Sotah,0.000694359838585527
 156,"Zohar, Emor",0.0006937404422985338
-157,Notes by Rabbi Yehoshua Hartman on Derashat Shabbat HaGadol,0.0006898115174162531
 158,"Zohar, Chayei Sara",0.0006876832122485081
 159,Mishnah Ketubot,0.000687038325003743
 160,Mishnah Pesachim,0.0006605291386305698
@@ -174,7 +171,6 @@ Rank,Book Title,PageRank Score
 173,Jerusalem Talmud Sukkah,0.00062344074630069
 174,Mishnah Peah,0.0006222138456437674
 175,Lamentations,0.0006205945020781793
-176,Notes by Rabbi Yehoshua Hartman on Netzach Yisrael,0.0006200529952963999
 177,"Mishneh Torah, Sabbath",0.0006179270679721784
 178,"Zohar, Vayishlach",0.0006110338488868714
 179,Tractate Soferim,0.000606407989933162
@@ -233,7 +229,6 @@ Rank,Book Title,PageRank Score
 232,The Midrash of Philo,0.0004944377278253838
 233,Rashi on Genesis,0.00048505072983478804
 234,Mishnah Berakhot,0.0004837817458837035
-235,Notes by Rabbi Yehoshua Hartman on Derush al HaTorah,0.0004791192513211809
 236,"Zohar, Vaetchanan",0.0004762166734575567
 237,Mishnah Eruvin,0.0004753998844677479
 238,"Torat HaOlah, Part Three",0.0004749370601276951
@@ -560,7 +555,6 @@ Rank,Book Title,PageRank Score
 559,Mishnat Eretz Yisrael on Mishnah Sukkah,0.00021607326213769388
 560,Mishnat Eretz Yisrael on Mishnah Eruvin,0.0002157074931416749
 561,Mishnah Berurah,0.00021420643614635359
-562,"Notes by Rabbi Yehoshua Hartman on Be'er HaGolah, Well 4",0.0002130569876980258
 563,"Sifra, Vayikra Dibbura DeNedavah, Section 3",0.0002114238951483809
 564,"Siftei Chakhamim, Numbers",0.0002109615040582118
 565,"Mishneh Torah, One Who Injures a Person or Property",0.00021075258385686645
@@ -699,7 +693,6 @@ Rank,Book Title,PageRank Score
 698,"Sources and References on Likkutei Torah, Nitzavim",0.00016967079623728
 699,"Sefer HeArukh, Letter Bet",0.000169655398663225
 700,"Turei Zahav on Shulchan Arukh, Yoreh De'ah",0.00016960782145177165
-701,"Notes by Rabbi Yehoshua Hartman on Ohr Chadash, Introduction",0.00016896172073435823
 702,"Sources and References on Likkutei Torah, Ki Teitzei",0.00016893246474255862
 703,"Machberet Menachem, Letter Ayin",0.00016871520990617933
 704,"Mishneh Torah, Gifts to the Poor",0.0001683185635723746
@@ -712,7 +705,6 @@ Rank,Book Title,PageRank Score
 711,Tziyyun LeNefesh Chayyah on Shabbat,0.00016530535385396702
 712,"Likkutei Torah, Nitzavim",0.00016530354684965917
 713,Tosafot on Megillah,0.00016529420893907163
-714,"Notes by Rabbi Yehoshua Hartman on Be'er HaGolah, Well 6",0.00016514178282134466
 715,Tosefta Horayot,0.00016494404623305283
 716,"Zohar, Bechukotai",0.00016490302768942778
 717,"Likkutei Torah, Ki Teitzei",0.0001648677754622763
@@ -852,7 +844,6 @@ Rank,Book Title,PageRank Score
 851,"Sefer HaTerumah, Simanim",0.0001341112033442382
 852,"Gan Naul, House II",0.00013371276300759382
 853,"Zohar, Behar",0.00013324497170542587
-854,"Notes by Rabbi Yehoshua Hartman on Ohr Chadash, Preface",0.0001329618667796501
 855,"Torah Ohr, Bereshit",0.00013271541502831444
 856,"Zohar, Addenda, Volume III",0.00013259841993222736
 857,Mishnat Eretz Yisrael on Mishnah Temurah,0.00013258962028264964
@@ -900,7 +891,6 @@ Rank,Book Title,PageRank Score
 899,"Sifra, Emor, Section 4",0.0001245259991269243
 900,Teshuvot Rabbi Akiva Eiger Tinyana,0.00012443734742907428
 901,Mishnat Eretz Yisrael on Mishnah Makkot,0.00012438409540706534
-902,"Notes by Rabbi Yehoshua Hartman on Be'er HaGolah, Well 2",0.00012387659154882623
 903,"Yismach Moshe, Sh'lach",0.00012343776697630178
 904,"Sources and References on Likkutei Torah, Balak",0.00012335030889157496
 905,"Seder HaDorot, Almanac",0.00012301588241438364
@@ -937,7 +927,6 @@ Rank,Book Title,PageRank Score
 936,Rashi on Sanhedrin,0.00011894659009180281
 937,"The Torah; A Women's Commentary, Genesis",0.00011885360600753736
 938,"Sifra, Tazria Parashat Negaim, Section 3",0.00011853669841726169
-939,"Notes by Rabbi Yehoshua Hartman on Be'er HaGolah, Well 5",0.00011843962490728852
 940,"Noda BiYehudah II, Yoreh Deah",0.00011838354073788731
 941,"Turei Zahav on Shulchan Arukh, Orach Chayim",0.00011806054028328597
 942,"Toldot Yaakov Yosef, Re'eh",0.0001178751972607742
@@ -983,7 +972,6 @@ Rank,Book Title,PageRank Score
 982,"Yismach Moshe, Vaera",0.00011175983006528402
 983,"Shenei Luchot HaBerit, Torah Shebikhtav, Vayakhel, Pekudei, Torah Ohr",0.00011138835185566612
 984,"Shenei Luchot HaBerit, Aseret HaDibrot, Pesachim, Matzah Shemurah",0.00011134548715021277
-985,"Notes by Rabbi Yehoshua Hartman on Netivot Olam, Netiv Hatshuva",0.0001112563689573421
 986,"Sifra, Tazria Parashat Negaim, Chapter 16",0.00011117179013269186
 987,"Tanna DeBei Eliyahu Zuta, Additions to Seder Eliyahu Zuta, Pirkei Derech Eretz",0.00011111422759453567
 988,"Yismach Moshe, Vayishlach",0.00011107286378619395
@@ -992,7 +980,6 @@ Rank,Book Title,PageRank Score
 991,"Sha'arei Orah, Eight Gate, Third Sefirah",0.00011067436733639708
 992,"Be'er HaGolah, Well 6",0.0001106350864344541
 993,"Torah Ohr, Toldot",0.00011010048800694692
-994,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Yevamot",0.00011009211486886448
 995,"Meshekh Chokhmah, Emor",0.00010996428827129227
 996,"Zohar Chadash, Lech Lecha",0.00010983752298308541
 997,"Siddur Sefard, Simchat Torah, Hakafot",0.00010979195826064868
@@ -1166,7 +1153,6 @@ Rank,Book Title,PageRank Score
 1165,"Shem MiShmuel, Shavuot",8.769798232992732e-05
 1166,"The Kehot Chumash; A Chasidic Commentary, Leviticus",8.750912191319394e-05
 1167,"Sources and References on Likkutei Torah, Achrei Mot",8.733883584531464e-05
-1168,"Notes by Rabbi Yehoshua Hartman on Be'er HaGolah, Well 1",8.72785652989973e-05
 1169,"Sifra, Kedoshim, Chapter 10",8.722245976496744e-05
 1170,"Yismach Moshe, Tzav",8.709167267125259e-05
 1171,Tractate Sefer Torah,8.70340079244796e-05
@@ -1292,7 +1278,6 @@ Rank,Book Title,PageRank Score
 1291,"Zakhor VeShamor, Gate II, Chapter IX",7.635348269652785e-05
 1292,Penei Moshe on Jerusalem Talmud Terumot,7.632024664599882e-05
 1293,"Midrash Tanchuma Buber, Metzora",7.631898962842573e-05
-1294,"Notes by Rabbi Yehoshua Hartman on Derush al HaTorah, Introduction",7.610776331856253e-05
 1295,"Sifra, Metzora Parashat Zavim, Section 2",7.593883310473042e-05
 1296,"Shenei Luchot HaBerit, Torah Shebikhtav, Balak, Torah Ohr",7.589037515358384e-05
 1297,Tosefta Challah (Lieberman),7.58673028937134e-05
@@ -1316,7 +1301,6 @@ Rank,Book Title,PageRank Score
 1315,"Steinsaltz on Mishneh Torah, Other Sources of Defilement",7.469470551492257e-05
 1316,Onkelos Exodus,7.463117411606568e-05
 1317,"Siddur Ashkenaz, Festivals, Selichot, Yom Kippur Katan",7.460124197782279e-05
-1318,"Notes by Rabbi Yehoshua Hartman on Ner Mitzvah, Volume I",7.457455515411354e-05
 1319,Rif Megillah,7.455366349226761e-05
 1320,Rashi on Bava Metzia,7.451939451587313e-05
 1321,"Peri Megadim on Yoreh De'ah, Mishbezot Zahav",7.451389803681013e-05
@@ -1324,7 +1308,6 @@ Rank,Book Title,PageRank Score
 1323,"Tiferet Yosef, Sukkot",7.43741248760156e-05
 1324,"Likkutei Torah, Shabbat Shuvah",7.433816503525535e-05
 1325,"Yosher Divrei Emet, First Kuntres",7.429287986420114e-05
-1326,"Notes by Rabbi Yehoshua Hartman on Be'er HaGolah, Well 7",7.420593689719962e-05
 1327,"Yitzchak Yeranen on Mishneh Torah, Human Dispositions",7.412401856736276e-05
 1328,"Zakhor VeShamor, Gate I, Chapter I",7.410971979843852e-05
 1329,"Zohar, Shoftim",7.406262413288223e-05
@@ -1392,7 +1375,6 @@ Rank,Book Title,PageRank Score
 1391,"Midrash BeChiddush on Pesach Haggadah, Magid, The Ten Plagues",6.946466138472413e-05
 1392,"Sifra, Shemini, Section 3",6.936544445646492e-05
 1393,"Prisha, Yoreh De'ah",6.933891080651532e-05
-1394,"Notes by Rabbi Yehoshua Hartman on Derekh Chayim, Kol Yisrael; The Opening Mishna",6.924457270583058e-05
 1395,"Siddur Sefard, Yotzerot, Shabbat HaGadol",6.923787078970296e-05
 1396,"Commentary on Sefer Hamitzvot of Rasag, Negative Commandments",6.913318387422125e-05
 1397,"Sifra, Tazria Parashat Negaim, Section 2",6.901371570348507e-05
@@ -1435,7 +1417,6 @@ Rank,Book Title,PageRank Score
 1434,"Commentary on Sefer Hamitzvot of Rasag, Positive Commandments",6.691775966265819e-05
 1435,"Torah Ohr, Vayetzei",6.687032361083704e-05
 1436,Noam Yerushalmi on Yoma,6.685374492816937e-05
-1437,"Notes by Rabbi Yehoshua Hartman on Derekh Chayim, Introduction",6.684053524301736e-05
 1438,"Mishnat Eretz Yisrael, Preface, The Development of the Oral Torah Law",6.671654871565218e-05
 1439,"Sefer HeArukh, Letter Lamed",6.649065394868265e-05
 1440,"Pesikta Rabbati, Supplement A",6.641785656200016e-05
@@ -1456,7 +1437,6 @@ Rank,Book Title,PageRank Score
 1455,"Toldot Yaakov Yosef, Vaetchanan",6.56099560715722e-05
 1456,"Sources and References on Likkutei Torah, Tazria",6.55901094585619e-05
 1457,"HaKtav VeHaKabalah, Genesis",6.553083474140049e-05
-1458,"Notes by Rabbi Yehoshua Hartman on Gevurot Hashem, Second Introduction to Gevurot Hashem",6.549768640450378e-05
 1459,"Shulchan Arukh, Even HaEzer, Seder HaGet",6.549493370950069e-05
 1460,Tziporen Shamir,6.546498504492342e-05
 1461,"Sifra, Metzora Parashat Zavim, Chapter 5",6.541947468837509e-05
@@ -1517,7 +1497,6 @@ Rank,Book Title,PageRank Score
 1516,"Sifra, Tzav, Section 4",6.229147836656723e-05
 1517,"Simchat HaRegel on Pesach Haggadah, Magid, First Fruits Declaration",6.219155325735992e-05
 1518,"Machberet Menachem, Letter Nun",6.217064377912992e-05
-1519,"Notes by Rabbi Yehoshua Hartman on Be'er HaGolah, Well 3",6.214041488664816e-05
 1520,"Sifra, Behar, Chapter 7",6.213301407620529e-05
 1521,"Yismach Moshe, Shoftim",6.210095729820386e-05
 1522,"Zohar, Eikev",6.208545293138954e-05
@@ -1625,7 +1604,6 @@ Rank,Book Title,PageRank Score
 1624,"Zakhor VeShamor, Gate IV, Chapter XV",5.743672152266637e-05
 1625,"Midrash Tanchuma, Vaera",5.743604572534833e-05
 1626,Esther Rabbah,5.7379498293071844e-05
-1627,"Notes by Rabbi Yehoshua Hartman on Ner Mitzvah, Volume II",5.7357091764046306e-05
 1628,"Midrash Tanchuma Buber, Vayeshev",5.7352693615099156e-05
 1629,Sefer HaMelitzah,5.7307842919869367e-05
 1630,"Megalleh Amukkot on Torah, Vayetzei",5.730450784382564e-05
@@ -1675,7 +1653,6 @@ Rank,Book Title,PageRank Score
 1674,"Sifra, Acharei Mot, Chapter 4",5.493093952153486e-05
 1675,"Mishnat Eretz Yisrael on Mishnah Yadayim, Preface",5.487109755054463e-05
 1676,"Sifra, Tzav, Section 7",5.48615737190003e-05
-1677,"Notes by Rabbi Yehoshua Hartman on Gevurot Hashem, Third Introduction to Gevurot Hashem",5.481039421599869e-05
 1678,"Sifra, Metzora, Section 4",5.473472902361239e-05
 1679,"Meshekh Chokhmah, Kedoshim",5.4689448645389636e-05
 1680,"Be'er HaGolah, Well 7",5.46408312465467e-05
@@ -1709,7 +1686,6 @@ Rank,Book Title,PageRank Score
 1708,"The Jonathan Sacks Haggadah, Barech, Pour Out Thy Wrath",5.3742241090783725e-05
 1709,"Peninei Halakhah, The Nation and the Land, Supplement, Responsa of Rabbi Shlomo Goren",5.3699796235358905e-05
 1710,Rif Makkot,5.368824163686662e-05
-1711,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Sotah",5.3661460723824285e-05
 1712,"Likkutei Torah, Beshalach",5.365651659432326e-05
 1713,Penei Moshe on Jerusalem Talmud Nazir,5.363149910641932e-05
 1714,"The Jonathan Sacks Haggadah, Korech",5.3610104215580146e-05
@@ -1804,7 +1780,6 @@ Rank,Book Title,PageRank Score
 1803,"Midrash Tanchuma, Vayakhel",5.007699597770842e-05
 1804,"Talks of Yeshayahu Leibowitz on the Parasha, Metzora",5.0064204845838324e-05
 1805,"Sifra, Vayikra Dibbura DeChovah, Chapter 21",4.995491180686288e-05
-1806,"Notes by Rabbi Yehoshua Hartman on Gevurot Hashem, Laws of Yayin Nesach",4.992183111600899e-05
 1807,"Menorat HaMaor, ii; On Prayer, Prayer",4.9852540885129684e-05
 1808,"On Dreams, Book II",4.984231668277146e-05
 1809,"Zakhor VeShamor, Gate II, Chapter VII",4.9834289143424004e-05
@@ -1897,7 +1872,6 @@ Rank,Book Title,PageRank Score
 1896,"Tiferet Shlomo, on Festivals, Pesach",4.7573971219842695e-05
 1897,"Teshuvot Maharam, Berlin Edition, Part II, Issur VeHeter",4.755504004057706e-05
 1898,"Tze'enah Ure'enah, Haftarot, Vayishlach",4.754191674273615e-05
-1899,Notes by Rabbi Yehoshua Hartman on Derekh Chayim,4.753434543152377e-05
 1900,"Peri Tzadik, Sukkot",4.751311580862996e-05
 1901,"Midrash Tanchuma, Lech Lecha",4.750600009790544e-05
 1902,"Steinsaltz on Mishneh Torah, Defilement by Leprosy",4.747920812590725e-05
@@ -1945,7 +1919,6 @@ Rank,Book Title,PageRank Score
 1944,"Meshekh Chokhmah, Shemini",4.6524911796938215e-05
 1945,"Minchat Shai on Torah, Genesis",4.652001291162332e-05
 1946,"Minchat Shai on Torah, Deuteronomy",4.651767641293828e-05
-1947,"Notes by Rabbi Yehoshua Hartman on Gevurot Hashem, Introduction to Gevurot Hashem",4.6477073648254564e-05
 1948,"Talks of Yeshayahu Leibowitz on the Parasha, Nasso",4.645551010246966e-05
 1949,"Steinsaltz on Mishneh Torah, Vows",4.6405337164995576e-05
 1950,"The Jewish Spiritual Heroes, Volume III; The Amoraim of Babylon and the Babylonian Talmud, Introduction",4.639190947126295e-05
@@ -2054,7 +2027,6 @@ Rank,Book Title,PageRank Score
 2053,"Siddur Edot HaMizrach, Preparatory Prayers, Morning Blessings",4.320831052421168e-05
 2054,"Mashmia Yeshuah, The Fourteenth Herald (Zechariah)",4.3200186882918476e-05
 2055,"Sifra, Emor, Chapter 12",4.313324398366653e-05
-2056,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Terumot",4.306464892553984e-05
 2057,"Yismach Moshe, Introduction",4.3053819495666255e-05
 2058,"Treasures Hidden in the Sand, The Objections",4.303046891313195e-05
 2059,"Sha'arei Orah, Introduction",4.300836449475823e-05
@@ -2082,7 +2054,6 @@ Rank,Book Title,PageRank Score
 2081,"Guide for the Perplexed, Prefatory Remarks",4.245294622879992e-05
 2082,"Shenei Luchot HaBerit, Torah Shebikhtav, V'Zot HaBerachah, Torah Ohr",4.244728255600264e-05
 2083,Noam Yerushalmi on Nazir,4.243924312831607e-05
-2084,"Notes by Rabbi Yehoshua Hartman on Gevurot Hashem, Summary of the Laws of Pesach",4.243154732046338e-05
 2085,"Recanati on the Torah, Yitro",4.2425614166098825e-05
 2086,"Megalleh Amukkot on Torah, Emor",4.2410452575483914e-05
 2087,"Steinsaltz on Mishneh Torah, One Who Injures a Person or Property",4.2385143027064444e-05
@@ -2495,7 +2466,6 @@ Rank,Book Title,PageRank Score
 2494,"Ein Yaakov, Sanhedrin",3.438222484122638e-05
 2495,"Sifra, Shemini, Section 8",3.4375836969860716e-05
 2496,"Sefer HaShorashim, ראשׁ",3.432797015651492e-05
-2497,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Kilayim",3.427883300894303e-05
 2498,"Simchat HaRegel on Pesach Haggadah, Magid, Story of the Five Rabbis",3.426743008227327e-05
 2499,"Likkutei Torah, Devarim",3.424776707236051e-05
 2500,"Netivot Olam, Netiv Ha'Avodah",3.423683649115106e-05
@@ -2528,7 +2498,6 @@ Rank,Book Title,PageRank Score
 2527,"Peri Tzadik, Emor",3.369632394903079e-05
 2528,"Steinsaltz on Mishneh Torah, Leavened and Unleavened Bread",3.367776162514638e-05
 2529,"Sefer HaShorashim, אמן",3.35886471539884e-05
-2530,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Peah",3.356742935173847e-05
 2531,"Midrash Tanchuma Buber, Vayakhel",3.353664290824628e-05
 2532,"Sifra, Emor, Chapter 19",3.351331905345629e-05
 2533,On the Cherubim,3.3508418904520553e-05
@@ -2627,7 +2596,6 @@ Rank,Book Title,PageRank Score
 2626,Noam Yerushalmi on Beitzah,3.2169954594228666e-05
 2627,"Paaneach Raza, Matot",3.215572557692989e-05
 2628,"Tze'enah Ure'enah, Pinchas",3.2134307064313986e-05
-2629,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Sheviit",3.209176096175591e-05
 2630,Tosefta Kifshutah on Gittin,3.2084309856451735e-05
 2631,"Siddur Sefard, Birchat HaMazon, Birchat HaMazon",3.207023282237661e-05
 2632,Sha'ar Ruach HaKodesh,3.2064639569981756e-05
@@ -2708,7 +2676,6 @@ Rank,Book Title,PageRank Score
 2707,"Siddur Ashkenaz, Festivals, Shalosh Regalim, Mussaf, Sanctity of the Day",3.072845607570792e-05
 2708,"The Jonathan Sacks Haggadah, Magid, The Ten Plagues",3.071456186196382e-05
 2709,"Siddur Sefard, Torah Readings, Torah Reading for Chol Hamoed Pesach",3.071277543869872e-05
-2710,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Demai",3.0712439359969976e-05
 2711,"Peri Tzadik, Shavuot",3.0708942803567365e-05
 2712,"Siddur Sefard, Various Prayers & Segulot, Parashat Haman Reading for Tuesday Beshalach",3.070514676775495e-05
 2713,German Commentary on Mishnah Sotah,3.070030781241049e-05
@@ -2937,7 +2904,6 @@ Rank,Book Title,PageRank Score
 2936,"Meshekh Chokhmah, Yitro",2.8162569338746974e-05
 2937,"Recanati on the Torah, Beha'alotcha",2.8162509722865688e-05
 2938,"Sefer HaShorashim, לחם",2.814921163806729e-05
-2939,"Notes by Rabbi Yehoshua Hartman on Be'er HaGolah, Introduction to Be'er HaGolah",2.8143506760762908e-05
 2940,"Tiferet Shlomo, on Torah, Matot",2.8140222503203543e-05
 2941,"Ohel Ya'akov on Torah, Ki Tavo",2.8128221451411817e-05
 2942,"Torat HaBayit HaAroch, The First House, The First Gate",2.8126291648622538e-05
@@ -2988,7 +2954,6 @@ Rank,Book Title,PageRank Score
 2987,"What is the Talmud, VIII What is not written in the Talmud? Jew and Gentile, 1 ""You are called man""",2.7718890331076216e-05
 2988,"Tov haLevanon, Introduction of the Author",2.770297544745287e-05
 2989,"Sefer HaShorashim, בין",2.7688213776361928e-05
-2990,"Notes by Rabbi Yehoshua Hartman on Tiferet Yisrael, Introduction",2.7678875216485336e-05
 2991,"The Jonathan Sacks Haggadah, Barech, Birkat Hamazon",2.7667906233620133e-05
 2992,"Torat HaBayit HaAroch, The Seventh House, The Women's House, The Fifth Gate",2.763025505668391e-05
 2993,Chayyim VaChesed,2.7619837571682764e-05
@@ -3303,9 +3268,7 @@ Rank,Book Title,PageRank Score
 3302,"Ohel Ya'akov on Torah, Bo",2.4973934362224707e-05
 3303,"Be'er HaGolah, Introduction to Be'er HaGolah",2.4949670187872234e-05
 3304,"Sefer HaShorashim, עם",2.494681193649224e-05
-3305,"Notes by Rabbi Yehoshua Hartman on Netivot Olam, Introduction to Netivot Olam",2.4946312759559555e-05
 3306,"Sulam on Zohar, Idra Rabba",2.49415636667008e-05
-3307,Notes by Rabbi Yehoshua Hartman on Gevurot Hashem,2.4936572809269817e-05
 3308,"Tiferet Shlomo, on Torah, Bechukotai",2.493098143932196e-05
 3309,"Rosh David, Vayishlach",2.4930291885861743e-05
 3310,"Sefer HaShorashim, נכה",2.4928082398850962e-05
@@ -3407,7 +3370,6 @@ Rank,Book Title,PageRank Score
 3406,Rambam on Mishnah Horayot,2.4101778720913136e-05
 3407,"Ohr LaShamayim, Chukat",2.4097314920620424e-05
 3408,"Sefer HaShorashim, כהן",2.408607833030513e-05
-3409,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Maaser Sheni",2.4075638094501227e-05
 3410,"Sefer HaShorashim, קשׁב",2.4071869732820577e-05
 3411,"Paaneach Raza, Miketz",2.4050003719179927e-05
 3412,"Tiferet Shlomo, on Torah, Vaetchanan",2.4047395289455504e-05
@@ -3442,7 +3404,6 @@ Rank,Book Title,PageRank Score
 3441,"Torat HaBayit HaAroch, The Sixth House, The Second Gate",2.3822261079539644e-05
 3442,"Steinsaltz on Mishneh Torah, Circumcision",2.3801632348688513e-05
 3443,"Siddur Sefard, Sukkot, First Day & Chol HaMoed",2.3797896796054924e-05
-3444,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Berakhot",2.3794353311065645e-05
 3445,"Mishnat Eretz Yisrael on Mishnah Mikvaot, Preface",2.375167237009089e-05
 3446,"Mishnat Eretz Yisrael on Mishnah Beitzah, Preface",2.3747730649872617e-05
 3447,"Siddur Edot HaMizrach, Weekday Shacharit, Incense Offering",2.374617303974267e-05
@@ -3570,7 +3531,6 @@ Rank,Book Title,PageRank Score
 3569,"Sefer HaShorashim, קסם",2.2915236124363084e-05
 3570,"Talks of Yeshayahu Leibowitz on the Parasha, Bamidbar",2.291479425225479e-05
 3571,"Tiferet Yosef, Ha'azinu and Shabbat Shuvah",2.291350821101943e-05
-3572,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Ketubot",2.2909484058124046e-05
 3573,"Otzar Midrashim, Midrash Yitbarach ('May He Be Blessed')",2.2907014172664723e-05
 3574,"Otzar Midrashim, Maaseh Beraishit & Maaseh Merkavah, Introduction",2.2906576588661528e-05
 3575,"Sefer HaShorashim, צמד",2.2902312873420777e-05
@@ -3699,7 +3659,6 @@ Rank,Book Title,PageRank Score
 3698,"Sefer HaShorashim, דלה",2.203936562685388e-05
 3699,Nimukei Yosef on Bava Metzia,2.2039176902446668e-05
 3700,"Siddur Ashkenaz, Festivals, Prayer for Rain",2.202622781115109e-05
-3701,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Nedarim",2.2024546029691823e-05
 3702,"Torat HaAdam, The Gate of Mourning, The Matter of Mourning",2.20228025271552e-05
 3703,"Sefer HaShorashim, יצק",2.2022108804501e-05
 3704,"Sefer HaShorashim, שׁבח",2.202026232756927e-05
@@ -3842,7 +3801,6 @@ Rank,Book Title,PageRank Score
 3841,Rambam on Pirkei Avot,2.1160798241512624e-05
 3842,"Peri Megadim on Orach Chayim, Letters",2.114723156867339e-05
 3843,Ritva on Makkot,2.1145273860127624e-05
-3844,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Maasrot",2.1144713616016176e-05
 3845,"Sefer HaShorashim, מה",2.114091218050224e-05
 3846,"Sulam on Zohar, Vayechi",2.113636730692732e-05
 3847,"Sefer HaShorashim, לוה",2.1130573204991057e-05
@@ -4393,7 +4351,6 @@ Rank,Book Title,PageRank Score
 4392,"Netivot Olam, Netiv Halashon",1.8722683916848797e-05
 4393,"Ketonet Pasim, Behar",1.8721791342203428e-05
 4394,"Noam Elimelekh, Sefer Shemot, Shemot",1.8719486659297165e-05
-4395,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Challah",1.8718314757364835e-05
 4396,"Maskil LeDavid, Numbers",1.8715482098217094e-05
 4397,"Ein Yaakov, Khagigah",1.871512766690179e-05
 4398,"Sefer HaShorashim, דרשׁ",1.871338539680516e-05
@@ -4534,7 +4491,6 @@ Rank,Book Title,PageRank Score
 4533,"Od Yosef Chai; Derashot, Matot",1.8222847096002944e-05
 4534,"Shabbat Siddur Sefard Linear, Hallel",1.8222697347406263e-05
 4535,"Zeroa Yamin on Pesach Haggadah, Magid, In the Beginning Our Fathers Were Idol Worshipers",1.8216642201417234e-05
-4536,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Orlah",1.8214725315003542e-05
 4537,"Shem HaGedolim, Maarekhet Sefarim, Letter Alef",1.821271474681887e-05
 4538,"Penei Sheviit Nekabelah, Letting the Land Lie Fallow",1.8203664179329934e-05
 4539,"Shaleach Teshalach, Realistic Part, Exposition on the Kosher Status of Various Birds",1.8201858544394947e-05
@@ -5003,7 +4959,6 @@ Rank,Book Title,PageRank Score
 5002,Mareh HaPanim on Jerusalem Talmud Shabbat,1.6988378453839265e-05
 5003,"Matteh Dan, First Dialogue",1.6987769746440804e-05
 5004,"Ba'alei HaNefesh, Sha'ar HaMayim",1.698403954360383e-05
-5005,Notes by Rabbi Yehoshua Hartman on Ohr Chadash,1.6983176366107197e-05
 5006,"Mishnat Eretz Yisrael on Mishnah Bekhorot, Appendix",1.697918080478559e-05
 5007,"HaEmunot veHaDeot, [Treatise VI] The Soul and Death",1.6977092969950586e-05
 5008,"Maor VaShemesh, Re'eh",1.6975882805101495e-05
@@ -5452,7 +5407,6 @@ Rank,Book Title,PageRank Score
 5451,"Noam Elimelekh, Sefer Devarim, Eikev",1.5675398229242854e-05
 5452,"Sefer HaShorashim, כוה",1.5673719715736556e-05
 5453,"Sefer HaShorashim, כרמל",1.567194226204107e-05
-5454,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Bikkurim",1.567130356420326e-05
 5455,"Sefer HaShorashim, גלח",1.5667147248951226e-05
 5456,"Sefer HaShorashim, פוץ",1.5665863116630305e-05
 5457,"The Kehot Chumash; A Chasidic Commentary, Parashah Overviews, Bechukotai",1.5664186877639805e-05
@@ -5541,7 +5495,6 @@ Rank,Book Title,PageRank Score
 5540,"Sefer HaShorashim, צבט",1.548023562453103e-05
 5541,"Rosh David, Noach",1.547359159022496e-05
 5542,"Sulam on Zohar, Sifra DiTzniuta",1.5471465228019626e-05
-5543,"Notes by Rabbi Yehoshua Hartman on Netzach Yisrael, Introduction",1.547102568345555e-05
 5544,"Sefer HaShorashim, גדע",1.5469430933620707e-05
 5545,"Rosh David, Devarim",1.5469026673285234e-05
 5546,"Ohr HaTzafun, Vayikra, IV",1.5467647564485222e-05
@@ -6514,7 +6467,6 @@ Rank,Book Title,PageRank Score
 6513,"Sefer HaShorashim, סעד",1.3675341450798517e-05
 6514,"Sefer HaShorashim, ים",1.3674232158234038e-05
 6515,"Shenei Luchot HaBerit, Torah Shebikhtav, Matot, Masei, Devarim, Ner Mitzvah",1.36695445451782e-05
-6516,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Yoma",1.3667998869036501e-05
 6517,"Sefer HaShorashim, חצץ",1.3666237672854021e-05
 6518,"The Great Partnership; God, Science, and the Search for Meaning, III; Faith and Its Challenges, 13; When Religion Goes Wrong",1.366536308253357e-05
 6519,"Me'or Einayim, Pinchas",1.366178850906061e-05
@@ -6803,7 +6755,6 @@ Rank,Book Title,PageRank Score
 6802,"Machzor Vitry, Laws of the Meal",1.3294630979575867e-05
 6803,"Tiferet Yosef, Shabbat Chol HaMoed Pesach",1.3294305284615977e-05
 6804,Mareh HaPanim on Jerusalem Talmud Horayot,1.329219003066799e-05
-6805,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Kiddushin",1.3291166762945696e-05
 6806,"Tiferet Shlomo, on Torah, Vayeilech",1.3288431985039007e-05
 6807,"Introductions to Tanaitic Literature, Introduction to Halakhic Midrashim, Remains from the Midrash attributed to Rabbi Ishmael's School to Leviticus",1.3284191708569389e-05
 6808,"Sefer HaShorashim, זרק",1.3282905730873744e-05
@@ -7118,7 +7069,6 @@ Rank,Book Title,PageRank Score
 7117,"Ohr HaTzafun, Bereshit, VII",1.288328896133274e-05
 7118,Bartenura on Mishnah Gittin,1.288202263849987e-05
 7119,"Nefesh HaChayim, An Introduction by the Author's Son",1.2881824626116705e-05
-7120,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Sanhedrin",1.288055400668574e-05
 7121,"Zera Kodesh, On Torah, Vayigash",1.2879646494853126e-05
 7122,"Sefer HaShorashim, רעשׁ",1.2878866376043696e-05
 7123,"Kad HaKemach, Purity of the Heart",1.2878675160410184e-05
@@ -7354,7 +7304,6 @@ Rank,Book Title,PageRank Score
 7353,"Ra'avad on Sifra, Shemini, Section 8",1.2625164350463792e-05
 7354,Petach Einayim on Bava Batra,1.2624657861830644e-05
 7355,"Sefer HaShorashim, קנן",1.2622205055989179e-05
-7356,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Shabbat",1.2622031590952316e-05
 7357,"I Believe; A Weekly Reading of the Jewish Bible, Vayetzeh; Laban the Aramean",1.2619661820660709e-05
 7358,"Ohr Ne'erav, PART IV",1.2619461619727202e-05
 7359,"Noam Elimelekh, Sefer Devarim, Ha'Azinu",1.2618559893826523e-05
@@ -7574,7 +7523,6 @@ Rank,Book Title,PageRank Score
 7573,Akeidat Yitzchak,1.2401502329358999e-05
 7574,"Return; Daily Inspiration for the Days of Awe, Day Four; Humility",1.2400679698502786e-05
 7575,"Megillat Ruth; From Chaos to Kingship, Perek 2",1.2399300691161407e-05
-7576,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Nazir",1.2396146874850066e-05
 7577,"Introductions to Amoraic Literature, Part I (Introductions to Tractates of the Babli), Beitzah",1.2396035873509842e-05
 7578,"Sefer HaShorashim, אצר",1.2393052860568971e-05
 7579,"Tze'enah Ure'enah, Haftarot, Intermediate Shabbat of Passover",1.2390561890008246e-05
@@ -8656,7 +8604,6 @@ Rank,Book Title,PageRank Score
 8655,"Od Yosef Chai; Derashot, Tazria",1.1436600077388896e-05
 8656,"Lessons in Leadership; A Weekly Reading of the Jewish Bible, Noah; Righteousness Is Not Leadership",1.1436492195459494e-05
 8657,Megillat Antiochus,1.1434572397158883e-05
-8658,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Bava Kamma",1.143206570808831e-05
 8659,"Sha'ar HaMitzvot, Vayelekh",1.1430757064889193e-05
 8660,"Judaism's Life Changing Ideas; A Weekly Reading of the Jewish Bible, Ekev; Listen, Really Listen",1.1429576233152064e-05
 8661,"Mishnat Eretz Yisrael on Mishnah Avodah Zarah, Bibliography",1.1428611861111286e-05
@@ -9130,7 +9077,6 @@ Rank,Book Title,PageRank Score
 9129,"Pri Etz Chaim, Gate of Prayer",1.1133870515763427e-05
 9130,"Olat Reiyah, Songs for Motzei Shabbat",1.1133653786816382e-05
 9131,"Sha'arei HaYichud VeEmunah, Preface",1.1132239110340693e-05
-9132,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Gittin",1.1131617866612392e-05
 9133,"Mei HaShiloach, Volume I, Deuteronomy, Vaetchanan",1.1131583377504259e-05
 9134,"Tze'enah Ure'enah, Haftarot, Vayigash",1.1131572965910613e-05
 9135,"Tzaverei Shalal, Haftarah for Shabbat Chol HaMoed Sukkot",1.112938130193109e-05
@@ -9572,7 +9518,6 @@ Rank,Book Title,PageRank Score
 9571,"Sefer HaShorashim, צעה",1.0886410970823989e-05
 9572,"Sefer HaShorashim, רמן",1.0886274902162968e-05
 9573,"Menorat HaMaor, vi; On the Commandments, On their fulfilment, x",1.0886140371723001e-05
-9574,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Bava Batra",1.088613998856766e-05
 9575,"Sefer HaChaim, Sefer Zekhuyot",1.0885601271657079e-05
 9576,"The Early Prophets, by Everett Fox, Judges, Part III; Closing the Bracket, The Nightmare at Giv'a",1.0885474511193128e-05
 9577,"Sefer HaShorashim, עשֹב",1.0885347410650911e-05
@@ -9690,7 +9635,6 @@ Rank,Book Title,PageRank Score
 9689,"Binat Adam, Shaar Isur Veheter",1.082849622105743e-05
 9690,"Menorat HaMaor, xi; On the Education of Children, Chastisement of love",1.0827139706288398e-05
 9691,"Tiferet Yosef, Ki Tisa",1.0826075950705693e-05
-9692,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Bava Metzia",1.0825920116646875e-05
 9693,Kli Yakar on Genesis,1.082581652142318e-05
 9694,"Sefer HaShorashim, סוס",1.082481260983168e-05
 9695,"What is the Talmud, II Methodology of the Talmud, 3 ""S'vara"" the principle of ""common sense""",1.082299928216645e-05
@@ -10336,7 +10280,6 @@ Rank,Book Title,PageRank Score
 10335,"The Torah; A Women's Commentary, Another View, Sh'lach",1.054054437712703e-05
 10336,Chiddushei HaRadal on Ruth Rabbah,1.053962959767615e-05
 10337,"Eretz Chemdah, Shoftim",1.0539427110880746e-05
-10338,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Eruvin",1.0538884141601918e-05
 10339,"Siddur Ashkenaz, Shabbat, Kabbalat Shabbat, Kaddish DeRabbanan",1.0538520337549256e-05
 10340,"Sefer HaShorashim, רזם",1.0538145430791338e-05
 10341,"Karati Bekhol Lev, Beha'alotcha",1.0537811590047345e-05
@@ -11171,7 +11114,6 @@ Rank,Book Title,PageRank Score
 11170,"Ra'avad on Sifra, Vayikra Dibbura DeChovah, Chapter 22",1.0254163159633686e-05
 11171,"Siddur Sefard, Shavuot",1.0253949857160738e-05
 11172,Shoel uMeshiv Mahadura VI,1.0253621714325328e-05
-11173,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Moed Katan",1.0251438439560125e-05
 11174,"Kos Eliyahu on Pesach Haggadah, Hallel, Second Half of Hallel",1.0250123168422362e-05
 11175,"Shenei Luchot HaBerit, Torah Shebikhtav, Sefer Vayikra, Derekh Chayim, Achrei Mot",1.0249361786401537e-05
 11176,"Contemporary Halakhic Problems, Vol III, Part II, Chapter XI Preemptive War in Jewish Law",1.0248929816890205e-05
@@ -12815,7 +12757,6 @@ Rank,Book Title,PageRank Score
 12814,"The Kehot Chumash; A Chasidic Commentary, Parashah Overviews, Devarim",9.82532834995658e-06
 12815,"Derekh Mitzvotekha, Not to eat the sciatic nerve",9.824659949403158e-06
 12816,"Nachal Sorek, Haftarah of Sh'lach",9.824267557361055e-06
-12817,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Pesachim",9.824196225369852e-06
 12818,"Nishmat HaBayit, Part V; Contraception, Siman 39; Establishing a Veset with Hormonal Contraception",9.823912778313275e-06
 12819,"Introductions to the Babylonian Talmud, Avodah Zarah, Introduction to Perek II",9.82372438379088e-06
 12820,"Sefer HaShorashim, מזה",9.82372438379088e-06
@@ -14085,7 +14026,6 @@ Rank,Book Title,PageRank Score
 14084,"Tzaverei Shalal, Haftarah of Beha'alotcha",9.603404998263866e-06
 14085,"Contemporary Halakhic Problems, Vol VI, Chapter 2 Sacrificing the Few to Save the Many",9.603327486612014e-06
 14086,"Keli Chemdah on Torah, Balak",9.603318086544073e-06
-14087,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Beitzah",9.603080639590326e-06
 14088,"Ma'alot HaMiddot, xiii; On Compassion and Cruelty",9.602912196580977e-06
 14089,"Machzor Yom Kippur Ashkenaz Linear, Reading of the Torah, Haftarah for Yom Kippur Morning",9.602912196580977e-06
 14090,"Machzor Yom Kippur Ashkenaz, Reading of the Torah, Haftarah for Yom Kippur Morning",9.602912196580977e-06
@@ -14149,7 +14089,6 @@ Rank,Book Title,PageRank Score
 14148,"Ben Porat Yosef, Kuntres Acharon",9.593525109299606e-06
 14149,"LeNevukhei HaTekufah, Foreword",9.592936410735347e-06
 14150,"Moreh Nevukhei HaZeman, Gate 2; Paths",9.592936410735347e-06
-14151,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Chagigah",9.592936410735347e-06
 14152,"Derekh HaMelekh, Torah, Vayigash",9.592482618294569e-06
 14153,Rishon LeTzion on I Samuel,9.592364785961887e-06
 14154,"Ma'alot HaMiddot, xvi; On Good and Evil Inclinations",9.592099604959667e-06
@@ -14204,13 +14143,11 @@ Rank,Book Title,PageRank Score
 14203,"Midbar Kedemot, Letter Chet",9.581678457283174e-06
 14204,"Mei HaShiloach, Volume II, Prophets, Hosea",9.581566343707683e-06
 14205,"Tzaverei Shalal, Haftarah of Pinchas",9.581566343707683e-06
-14206,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Makkot",9.581221898590975e-06
 14207,"Pri Etz Chaim, Gate of Rosh Hashana",9.58117495311278e-06
 14208,"Hasagot HaRa'avad on Mishneh Torah, Sabbatical Year and the Jubilee",9.580869148794333e-06
 14209,"Kovetz Yesodot VaChakirot, מתוך שאינו יכול לישבע משלם",9.579998905274236e-06
 14210,"Kovetz Yesodot VaChakirot, פשיעה",9.579998905274236e-06
 14211,"Machzor Yom Kippur Sefard, Kol Nidrei",9.579688883128799e-06
-14212,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Rosh Hashanah",9.579493183185625e-06
 14213,"Otzar Midrashim, Tekiata d'Bei Rav",9.579493183185625e-06
 14214,"Kessef Mishneh on Mishneh Torah, Offerings for Those with Incomplete Atonement",9.579012523885894e-06
 14215,"Ohr HaTzafun, Miscellany, IV",9.578596267382652e-06
@@ -14676,7 +14613,6 @@ Rank,Book Title,PageRank Score
 14675,"Ein HaTekhelet, Second Article",9.529129025414073e-06
 14676,Maharam on Gittin,9.528828627536193e-06
 14677,"Penei David, Genesis, Miketz",9.528642557889208e-06
-14678,"Notes by Heinrich Guggenheimer on Jerusalem Talmud, Horayot",9.527688451554781e-06
 14679,"Mateh Yehonatan on Shulchan Arukh, Yoreh De'ah",9.52734753739751e-06
 14680,"Otzar Midrashim, A Tale of Rabbi Meir, Introduction",9.526773041106414e-06
 14681,"Kiryat Sefer on Mishneh Torah, Reading the Shema",9.525712212555939e-06
