@@ -1,5 +1,7 @@
 from HebrewTransliterationEngine import HebrewTransliterationEngine
 from bs4 import BeautifulSoup
+import logging
+import requests
 
 # from process_text import process_sentence
 from CitationClassifier import CitationClassifier
@@ -26,7 +28,9 @@ def extract_hebrew_chunks(text, min_words=5):
     result = [chunk for chunk in raw_chunks if len(chunk.split()) >= min_words]
     return result
 
+
 def find_links(transcript: str):
+    log = logging.getLogger("source_pipeline")
     sentences = split_into_sentences(transcript)
     # Transliterate all sentences
     transliterator = HebrewTransliterationEngine()
@@ -39,19 +43,50 @@ def find_links(transcript: str):
     for sentence in citation_sentences:
         # Find Hebrew chunks of certain size to fuzzy find against
         hebrew_chunks = extract_hebrew_chunks(sentence["text"], 5)
+        fuzzy_results = []
         for chunk in hebrew_chunks:
             # add found sources to source field
             result = fuzzy.execute_search(chunk)
+            fuzzy_results.append(result)
+        if fuzzy_results:
+            sentence["fuzzyMatches"] = fuzzy_results
+        results_for_sentence = []
+        for query in sentence["queries"]:
+            payload = {
+                "query": query,
+                "top_k": 20,
+                "unique": True,
+                "rerank_pool_size": 100,
+            }
+            try:
+                response = requests.post(
+                    url="http://localhost:8000/search", json=payload
+                )
+                response.raise_for_status()
+                results = response.json().get("results", [])
+                # Only add to local list if results are non-empty
+                if results:
+                    results_for_sentence.append(results)
+            except requests.RequestException as e:
+                log.warning("Search failed for query=%r: %s", query, e)
+        # Only create the key in the dictionary if we found non-empty outputs
+        if results_for_sentence:
+            sentence["APIOutputs"] = results_for_sentence
         # NER and Naive data extraction
-            # Any source path containing "Daf" must become a addr1 gemara ref
+        # Normalize NER and Naive data to match API/Fuzzy outputs
     for sentence in citation_sentences:
-        # API calls to check against the source field and extracted data
+        # Verification systems
+        # Get NER output for the last 4-5 sentences
+        for output in sentence["APIOutputs"]:
+            # Perform boosts
+        for output in sentence["fuzzyMatches"]:
+            # Perform boosts
     # convert to html with footnotes
     return merge_footnotes()
 
 def merge_footnotes(sentences, citation_sentences):
     if len(sentences) != len(citation_sentences):
-        raise RuntimeError("citation_sentences must contain the same number of sentences as the original text") 1
+        raise RuntimeError("citation_sentences must contain the same number of sentences as the original text")
 
     if not isinstance(citation_sentences, list):
         raise TypeError("citation_sentences must be a list")
