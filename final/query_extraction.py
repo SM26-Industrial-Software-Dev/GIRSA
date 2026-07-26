@@ -1,4 +1,5 @@
 import json
+import os
 from google import genai
 from google.genai import types
 
@@ -8,8 +9,25 @@ class GeminiQuoteExtractor:
     def __init__(self, api_key: str):
         self.client = genai.Client(api_key=api_key)
         self.model = "gemini-3.5-flash-lite"
+    
+    def extract_queries(self, sentences, batch_size=25):
+        batches = self._chunk_sentences(sentences, batch_size)
+        all_results = []
 
-    def extract_queries(self, sentences):
+        for i, batch in enumerate(batches):
+            print(f"Processing batch {i + 1}/{len(batches)} ({len(batch)} sentences)")
+            batch_results = self._extract_queries_batch(batch)
+            all_results.extend(batch_results)
+
+        return all_results
+
+    def _chunk_sentences(self, sentences, batch_size=25):
+        return [
+            sentences[i:i + batch_size]
+            for i in range(0, len(sentences), batch_size)
+        ]
+
+    def extract_queries_batch(self, sentences):
         """
         Parameters
         ----------
@@ -150,7 +168,7 @@ Input sentences:
 
 def main():
 
-    API_KEY = "AQ.Ab8RN6L0bjTwlQsMEUO2GUz015Yxn7mMfSEfU2EATwG67wdPMA"
+    API_KEY = os.environ["GEMINI_API_KEY"]
 
     extractor = GeminiQuoteExtractor(API_KEY)
     sentences = [
@@ -253,30 +271,6 @@ def main():
     {
         "index": 24,
         "text": "So the Gemara says the conclusion of the Sugya was that דברים שבלב אינם דברים."
-    },
-    {
-        "index": 25,
-        "text": "That if he would have actually stipulated, he would have actually said and made a conditional sale, so we know that there is a Parsha in the Torah of making sales al tnai."
-    },
-    {
-        "index": 26,
-        "text": "The Gemara tells us in Masechet Kiddushin a little bit later on in the third Perek that if a guy MeKadesh a woman on the condition that it rains today or MeGaresh a woman on the condition XYZ, I sell you a field on the condition XYZ, so we learn out from Parshat Matot that what's called the תנאי בני גד ובני ראובן that Moshe Rabbeinu gave the whole Ever haYarden, east side of the Yarden to בני גד ובני ראובן al tnai on the condition that they're going to come and fight on the west side of the Yarden."
-    },
-    {
-        "index": 27,
-        "text": "So it was a matana al tnai and it says BFeirush in the Torah that if you do the Tnai you get the Kinyan, if you don't get the Tnai then you don't get the Kinyan."
-    },
-    {
-        "index": 28,
-        "text": "So the Gemara says we derive from here a Din in Choshen Mishpat and in Even haEzer that you can make a Mechir al tnai, Matana al tnai, Kiddushin al tnai, Gittin al tnai, it's a whole Parsha of Tnaim in the Torah."
-    },
-    {
-        "index": 29,
-        "text": "So comes the Gemara and says should we view this as a Mechir al tnai?"
-    },
-    {
-        "index": 30,
-        "text": "The Gemara says no you can't, you know why?"
     }
 ]
 
