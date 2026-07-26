@@ -48,6 +48,35 @@ def are_titles_same_book(db_cursor, title_a: str, title_b: str) -> bool:
     return False
 
 
+def score_candidate(candidate: dict, window_ner: list[dict], db_cursor) -> float:
+    candidate_author = candidate["author"] if candidate["author"] else None
+    candidate_title = candidate["book_id"]
+    candidate_original_score = candidate["score"]
+    matches = 0
+    for entry in window_ner:
+        if not entry:
+            continue
+        if entry["authority"]:
+            if candidate_author is not None and entry["authority"] == candidate_author:
+                matches += 1
+            elif are_titles_same_book(
+                db_cursor=db_cursor, title_a=candidate_title, title_b=entry["authority"]
+            ):
+                matches += 1
+        if entry["addr1"] and candidate["addr1"]:
+            if entry["addr1"] == candidate["addr1"]:
+                matches += 1
+        if entry["addr2"] and candidate["addr2"]:
+            if entry["addr2"] == candidate["addr2"]:
+                matches += 1
+        if entry["addr3"] and candidate["addr3"]:
+            if entry["addr3"] == candidate["addr3"]:
+                matches += 1
+        if entry["addr4"] and candidate["addr4"]:
+            if entry["addr4"] == candidate["addr4"]:
+                matches += 1
+
+
 def extract_hebrew_chunks(text, min_words=5):
     # Match sequences of Hebrew characters and spaces/punctuation between them
     hebrew_pattern = r"[\u0590-\u05FF]+(?:\s+[\u0590-\u05FF]+)*"
