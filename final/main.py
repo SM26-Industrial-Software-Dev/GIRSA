@@ -2,6 +2,8 @@ from HebrewTransliterationEngine import HebrewTransliterationEngine
 from bs4 import BeautifulSoup
 import logging
 import requests
+import book_alias_lookup
+import sqlite3
 
 # from process_text import process_sentence
 from CitationClassifier import CitationClassifier
@@ -26,6 +28,8 @@ def are_titles_same_book(db_cursor, title_a: str, title_b: str) -> bool:
     if title_a.strip().lower() == title_b.strip().lower():
         return True
 
+    possible_titles_b = find_in_aliases(title_b)
+
     query = """
         SELECT DISTINCT b.id
         FROM books b
@@ -37,15 +41,39 @@ def are_titles_same_book(db_cursor, title_a: str, title_b: str) -> bool:
     db_cursor.execute(query, {"title": title_a})
     res_a = db_cursor.fetchone()
 
-    # Get canonical ID for title B
-    db_cursor.execute(query, {"title": title_b})
-    res_b = db_cursor.fetchone()
+    for title_b in possible_titles_b:
+        # Get canonical ID for title B
+        db_cursor.execute(query, {"title": title_b})
+        res_b = db_cursor.fetchone()
 
-    # If both resolved and match, it's the same book
-    if res_a and res_b:
-        return res_a[0] == res_b[0]
+        # If both resolved and match, it's the same book
+        if res_a and res_b:
+            return res_a[0] == res_b[0]
 
     return False
+
+def clean_hebrew(text):
+    return "".join(re.findall(r"[\u0590-\u05ff]", text))
+
+def match_authors(str1, str2):
+    clean1 = clean_hebrew(str1)
+    clean2 = clean_hebrew(str2)
+    
+    smaller = clean1 if len(clean1) <= len(clean2) else clean2
+    larger = clean2 if len(clean1) <= len(clean2) else clean1
+    
+    if not smaller:
+        return True
+        
+    smaller_idx = 0
+    larger_idx = 0
+    
+    while larger_idx < len(larger) and smaller_idx < len(smaller):
+        if larger[larger_idx] == smaller[smaller_idx]:
+            smaller_idx += 1
+        larger_idx += 1
+        
+    return smaller_idx == len(smaller)
 
 
 def score_candidate(candidate: dict, window_ner: list[dict], db_cursor) -> float:
@@ -56,26 +84,25 @@ def score_candidate(candidate: dict, window_ner: list[dict], db_cursor) -> float
     for entry in window_ner:
         if not entry:
             continue
-        if entry["authority"]:
-            if candidate_author is not None and entry["authority"] == candidate_author:
+        if entry["TITLE"]:
+            if candidate_author is not None and match_authors(candidate_author, entry["TITLE"]):
                 matches += 1
             elif are_titles_same_book(
-                db_cursor=db_cursor, title_a=candidate_title, title_b=entry["authority"]
+                db_cursor=db_cursor, title_a=candidate_title, title_b=entry["TITLE"]
             ):
                 matches += 1
-        if entry["addr1"] and candidate["addr1"]:
-            if entry["addr1"] == candidate["addr1"]:
+        if entry["PATH"] and candidate["addr1"]:
+            if entry["PATH"] == candidate["addr1"]:
                 matches += 1
-        if entry["addr2"] and candidate["addr2"]:
-            if entry["addr2"] == candidate["addr2"]:
+        if entry["PATH"] and candidate["addr2"]:
+            if entry["PATH"] == candidate["addr2"]:
                 matches += 1
-        if entry["addr3"] and candidate["addr3"]:
-            if entry["addr3"] == candidate["addr3"]:
+        if entry["PATH"] and candidate["addr3"]:
+            if entry["PATH"] == candidate["addr3"]:
                 matches += 1
-        if entry["addr4"] and candidate["addr4"]:
-            if entry["addr4"] == candidate["addr4"]:
+        if entry["PATH"] and candidate["addr4"]:
+            if entry["PATH"] == candidate["addr4"]:
                 matches += 1
-
 
 def extract_hebrew_chunks(text, min_words=5):
     # Match sequences of Hebrew characters and spaces/punctuation between them
