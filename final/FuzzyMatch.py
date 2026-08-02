@@ -1,7 +1,7 @@
 import sqlite3
 import re
 
-DB_FILE = "/home/zelfinit/CS/sofer/sefaria/sefaria.db"
+DB_FILE = "C:/Users/Adir/Desktop/sefaria.db"
 
 
 class SefariaEngineV5:
@@ -76,6 +76,7 @@ class SefariaEngineV5:
                     "categories": categories,
                     "coords": [a1, a2, a3, a4],
                     "text_match": text_match,
+                    "chunk_id": id,
                 }
 
         raw_scores = [data["base_score"] for data in unique_matches.values()]
@@ -100,6 +101,7 @@ class SefariaEngineV5:
 
             formatted_results.append(
                 [
+                    data["chunk_id"],
                     weighted_score,
                     data["book_id"],
                     data["text_match"],
@@ -107,8 +109,44 @@ class SefariaEngineV5:
                     data["categories"],
                 ]
             )
-        formatted_results.sort(key=lambda x: x[0], reverse=True)
-        return formatted_results[:num_of_results]
+        formatted_results.sort(key=lambda x: x[1], reverse=True)
+        #return formatted_results[:num_of_results]
+
+        curr = self.conn.cursor()
+        chunk_id = formatted_results[0][0] if formatted_results else None
+        if chunk_id is None:
+            return []
+
+        query = """
+        SELECT 
+            c.id AS chunk_id,
+            p.book_id,
+            p.addr1,
+            p.addr2,
+            p.addr3,
+            p.addr4
+        FROM chunks c
+        JOIN passages p ON c.passage_id = p.id
+        WHERE c.id = ?;
+        """
+
+        curr.execute(query, (chunk_id,))
+
+        row = curr.fetchone()
+
+        book_id = row[1]
+        addrs = [row[2], row[3], row[4], row[5]]
+
+        formatted_book = book_id.replace(" ", "_") if book_id else ""
+        valid_addrs = [str(int(a) + 1) for a in addrs if a is not None and str(a).strip()]
+            
+        ref_parts = [formatted_book] + valid_addrs
+        sefaria_ref = ".".join(ref_parts)
+        sefaria_url = f"https://www.sefaria.org/{sefaria_ref}?lang=bi"
+
+        curr.close()
+
+        return sefaria_url
 
     def close(self):
         self.conn.close()
@@ -283,11 +321,13 @@ if __name__ == "__main__":
     )
     results = engine.execute_search(test_phrase, num_of_results=10)
 
-    print("\nResults:")
-    for row in results:
-        print(f"Score: {row[0]} | Book ID: {row[1]} | {row[4]}")
-        print(f"Match Context: {row[2]}")
-        print(f"Coordinates: {row[3]}")
-        # print("-" * 50)
+    print(results)
+
+    #print("\nResults:")
+    #for row in results:
+        #print(f"Score: {row[0]} | Book ID: {row[1]} | {row[4]}")
+        #print(f"Match Context: {row[2]}")
+        #print(f"Coordinates: {row[3]}")
+        #print("-" * 50)
 
     engine.close()
