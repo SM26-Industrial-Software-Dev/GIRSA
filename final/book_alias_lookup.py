@@ -1,6 +1,8 @@
 import sqlite3
 from rapidfuzz import fuzz
 
+PATH_TO_SEFARIA_DB = "sefaria.db"
+
 # returns an ordered list of all probable matches for this source in order
 def find_in_aliases(name, similarity_percentage = 85):
     sp = __normalize(similarity_percentage)
@@ -57,7 +59,7 @@ def __calc_similarity(corpus, name, sp):
     return results
     
 def __get_names():
-    conn = sqlite3.connect('sefaria.db')
+    conn = sqlite3.connect(PATH_TO_SEFARIA_DB)
     curr = conn.cursor()
     books_info = ('SELECT book_id, alias FROM book_aliases;')
     curr.execute(books_info)
@@ -66,7 +68,7 @@ def __get_names():
     return results
 
 def __get_locations(locations):
-    conn = sqlite3.connect('sefaria.db')
+    conn = sqlite3.connect(PATH_TO_SEFARIA_DB)
     curr = conn.cursor()
     results = []
     for location in locations:
