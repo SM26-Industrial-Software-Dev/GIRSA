@@ -79,30 +79,25 @@ def match_authors(str1, str2):
 def score_candidate(candidate: dict, window_ner: list[dict], db_cursor) -> float:
     candidate_author = candidate["author"] if candidate["author"] else None
     candidate_title = candidate["book_id"]
-    candidate_original_score = candidate["score"]
-    matches = 0
+    score = candidate["score"]
     for entry in window_ner:
         if not entry:
             continue
         if entry["TITLE"]:
             if candidate_author is not None and match_authors(candidate_author, entry["TITLE"]):
-                matches += 1
+                score += score * .1
             elif are_titles_same_book(
                 db_cursor=db_cursor, title_a=candidate_title, title_b=entry["TITLE"]
             ):
-                matches += 1
-        if entry["PATH"] and candidate["addr1"]:
-            if entry["PATH"] == candidate["addr1"]:
-                matches += 1
-        if entry["PATH"] and candidate["addr2"]:
-            if entry["PATH"] == candidate["addr2"]:
-                matches += 1
-        if entry["PATH"] and candidate["addr3"]:
-            if entry["PATH"] == candidate["addr3"]:
-                matches += 1
-        if entry["PATH"] and candidate["addr4"]:
-            if entry["PATH"] == candidate["addr4"]:
-                matches += 1
+                score += score * .1
+        if entry["PATH"]:
+        path = entry["PATH"]
+            if path is not None:
+                for addr_field in ("addr1", "addr2", "addr3", "addr4"):
+                    if candidate[addr_field] is not None and path == candidate[addr_field]:
+                        score += score * .1
+    candidate["score"] = score
+    return score
 
 def extract_hebrew_chunks(text, min_words=5):
     # Match sequences of Hebrew characters and spaces/punctuation between them
@@ -158,6 +153,9 @@ def find_links(transcript: str):
         if results_for_sentence:
             sentence["APIOutputs"] = results_for_sentence
         # NER and Naive data extraction
+        ner_output = ner_extractor.extract(sentence["text"])
+            if ner_output:
+                sentence["NER"] = ner_output
         # Normalize NER and Naive data to match API/Fuzzy outputs
     # Get NER output for the last 4-5 sentences
     max_trail_size = 4
@@ -166,7 +164,8 @@ def find_links(transcript: str):
         # 1. Build rolling window of NER items (current + up to 3 preceding sentences)
         start = max(0, i - max_trail_size + 1)
         window = citation_sentences[start : i + 1]
-        window_ner = [item.get("NER") for item in window if item.get("NER")]
+        window_ner_lists = [item.get("NER") for item in window if item.get("NER")]
+        window_ner = [entry for ner_list in window_ner_lists for entry in ner_list]
 
         links = []
 
@@ -192,7 +191,7 @@ def find_links(transcript: str):
             fuzzy_match_results.sort(key=lambda c: c["final_score"], reverse=True)
             links.append(fuzzy_match_results[0])
     # convert to html with footnotes
-    return merge_footnotes()
+    return return merge_footnotes(sentences, citation_sentences)
 
 
 def merge_footnotes(sentences, citation_sentences):
