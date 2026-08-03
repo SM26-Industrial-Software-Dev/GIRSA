@@ -95,7 +95,7 @@ class SefariaSearcher:
         category_filter: str = None,
         unique: bool = False,
         weighted: bool = True,
-        rerank: bool = False,
+        rerank: bool = True,
         rerank_pool: int = 100,
         addresses=None,
     ):
