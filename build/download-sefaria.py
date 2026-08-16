@@ -1,8 +1,10 @@
-#!/usr/bin/env python3
 """
 download_sefaria.py
 
-Downloads all cltk-full files and schemas from Sefaria's public export.
+Downloads all cltk-full files and schemas from Sefaria's public export,
+skipping any (book, version) pairs listed in an exclusions CSV
+(e.g. versions whose detected language doesn't match their stored
+language — see removable_versions.csv).
 
 Output structure:
     sefaria_export/
@@ -12,14 +14,17 @@ Output structure:
 No API key or authentication required.
 
 Usage:
-    python download_sefaria.py                  # download everything
-    python download_sefaria.py --skip-cltk      # schemas only
-    python download_sefaria.py --skip-schemas   # cltk-full only
-    python download_sefaria.py --workers 8      # more parallel downloads (default: 4)
-    python download_sefaria.py --out ./my_dir   # custom output folder
+    python download_sefaria.py                        # download everything, minus exclusions
+    python download_sefaria.py --skip-cltk             # schemas only
+    python download_sefaria.py --skip-schemas          # cltk-full only
+    python download_sefaria.py --workers 8              # more parallel downloads (default: 4)
+    python download_sefaria.py --out ./my_dir           # custom output folder
+    python download_sefaria.py --exclude-csv other.csv  # use a different exclusions file
+    python download_sefaria.py --no-exclude             # ignore removable_versions.csv entirely
 """
 
 import argparse
+import csv
 import os
 import sys
 import time
@@ -35,6 +40,7 @@ BOOKS_JSON_URL = (
 GCS_BASE = "https://storage.googleapis.com/sefaria-export"
 MAX_RETRIES = 3
 RETRY_DELAY = 2  # seconds
+DEFAULT_EXCLUDE_CSV = "removable_versions.csv"
 
 
 def fetch_json(url: str) -> dict:
@@ -42,6 +48,40 @@ def fetch_json(url: str) -> dict:
         import json
 
         return json.loads(resp.read())
+
+
+def load_exclusions(csv_path: Path) -> set[tuple[str, str]]:
+    """
+    Load a set of (book_id, version_title) pairs to skip.
+
+    Matches removable_versions.csv's columns: version_id, book_id,
+    version_title, stored_language, detected_lang, confidence, reason.
+    Only book_id + version_title are used — that's what actually maps
+    to a file on disk, regardless of why the row was flagged.
+    """
+    exclusions: set[tuple[str, str]] = set()
+    if not csv_path.exists():
+        print(f"[!] Exclusions file not found at {csv_path} — downloading everything.")
+        return exclusions
+
+    with open(csv_path, encoding="utf-8", newline="") as f:
+        reader = csv.DictReader(f)
+        if "book_id" not in (reader.fieldnames or []) or "version_title" not in (
+            reader.fieldnames or []
+        ):
+            print(
+                f"[!] {csv_path} is missing 'book_id'/'version_title' columns — "
+                f"found {reader.fieldnames}. Skipping exclusions."
+            )
+            return exclusions
+        for row in reader:
+            book_id = (row.get("book_id") or "").strip()
+            version_title = (row.get("version_title") or "").strip()
+            if book_id and version_title:
+                exclusions.add((book_id, version_title))
+
+    print(f"[*] Loaded {len(exclusions):,} version exclusions from {csv_path}")
+    return exclusions
 
 
 def download_file(
@@ -88,18 +128,44 @@ def download_file(
 
 
 def build_tasks(
-    books: list[dict], out_dir: Path, skip_cltk: bool, skip_schemas: bool
-) -> list[tuple[str, Path]]:
+    books: list[dict],
+    out_dir: Path,
+    skip_cltk: bool,
+    skip_schemas: bool,
+    exclusions: set[tuple[str, str]],
+) -> tuple[list[tuple[str, Path]], int]:
     tasks = []
+    excluded_count = 0
 
     if not skip_cltk:
         for book in books:
             url = book.get("cltk_full_url")
             if not url:
                 continue
+
+            title = book.get("title", "")
+
             # Reconstruct local path from URL: strip GCS_BASE prefix
             rel = url.replace(GCS_BASE + "/", "")
             dest = out_dir / rel
+
+            # Derive the version title the same way it ends up on disk
+            # (filename stem, underscores standing in for spaces) rather
+            # than trusting a possibly-differently-named field on `book`.
+            # This guarantees the exclusion check matches what actually
+            # gets written, regardless of the exact books.json schema.
+            version_title_from_path = dest.stem.replace("_", " ")
+
+            candidate_keys = {version_title_from_path}
+            for field in ("versionTitle", "version_title"):
+                val = book.get(field)
+                if val:
+                    candidate_keys.add(str(val))
+
+            if any((title, vt) in exclusions for vt in candidate_keys):
+                excluded_count += 1
+                continue
+
             tasks.append((url, dest))
 
     if not skip_schemas:
@@ -111,7 +177,7 @@ def build_tasks(
             dest = out_dir / "schemas" / filename
             tasks.append((url, dest))
 
-    return tasks
+    return tasks, excluded_count
 
 
 def run(args):
@@ -123,13 +189,20 @@ def run(args):
         f"Found {len(books):,} book entries ({len(set(b['title'] for b in books)):,} unique titles)"
     )
 
-    tasks = build_tasks(books, out_dir, args.skip_cltk, args.skip_schemas)
+    exclusions: set[tuple[str, str]] = set()
+    if not args.no_exclude:
+        exclusions = load_exclusions(Path(args.exclude_csv))
+
+    tasks, excluded_count = build_tasks(
+        books, out_dir, args.skip_cltk, args.skip_schemas, exclusions
+    )
     total = len(tasks)
 
     already_done = sum(1 for _, dest in tasks if dest.exists())
     to_download = total - already_done
     print(
-        f"\nFiles to download : {to_download:,}  (skipping {already_done:,} already present)"
+        f"\nFiles to download : {to_download:,}  (skipping {already_done:,} already present, "
+        f"{excluded_count:,} excluded by CSV)"
     )
     print(f"Output directory  : {out_dir.resolve()}")
     print(f"Workers           : {args.workers}\n")
@@ -168,6 +241,7 @@ def run(args):
     print(f"\nFinished in {elapsed / 60:.1f} min")
     print(f"  Downloaded : {success:,}")
     print(f"  Skipped    : {skipped:,}  (already existed)")
+    print(f"  Excluded   : {excluded_count:,}  (matched exclusions CSV)")
     print(f"  Failed     : {failed:,}")
     print(f"  Output     : {out_dir.resolve()}")
 
@@ -186,6 +260,16 @@ def main():
     )
     parser.add_argument("--skip-cltk", action="store_true", help="Skip cltk-full files")
     parser.add_argument("--skip-schemas", action="store_true", help="Skip schema files")
+    parser.add_argument(
+        "--exclude-csv",
+        default=DEFAULT_EXCLUDE_CSV,
+        help=f"CSV of (book_id, version_title) pairs to skip (default: {DEFAULT_EXCLUDE_CSV})",
+    )
+    parser.add_argument(
+        "--no-exclude",
+        action="store_true",
+        help="Ignore the exclusions CSV and download every version",
+    )
     args = parser.parse_args()
 
     if args.skip_cltk and args.skip_schemas:
