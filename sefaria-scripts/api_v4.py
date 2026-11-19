@@ -2,7 +2,7 @@
 """
 api_v4.py
 
-Includes weights with PageRank and standalone cross-encoding function, 
+Includes weights with PageRank and standalone cross-encoding function,
 plus partial book filtering, sentence-fractional search, and author resolution.
 """
 
@@ -33,8 +33,10 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-DB_PATH = os.getenv("DB_PATH", "sefaria.db")
-INDEX_PATH = os.getenv("INDEX_PATH", "sefaria.index")
+DB_PATH = os.getenv("DB_PATH", "/path/to/sefaria.db")
+INDEX_PATH = os.getenv(
+    "INDEX_PATH", "/path/to/sefaria.index"
+)
 MODEL_NAME = os.getenv("MODEL_NAME", "sentence-transformers/LaBSE")
 
 
@@ -50,8 +52,13 @@ def blob_to_vec(b: bytes) -> np.ndarray:
 # Core Engine Logic
 # ---------------------------------------------------------------------------
 class SefariaSearcher:
-    def __init__(self, db_path: str = "sefaria.db", index_path: str = "sefaria.index", model_name: str = "LaBSE", 
-                 reranker_name: str = "BAAI/bge-reranker-v2-m3"):
+    def __init__(
+        self,
+        db_path: str = "sefaria.db",
+        index_path: str = "sefaria.index",
+        model_name: str = "LaBSE",
+        reranker_name: str = "BAAI/bge-reranker-v2-m3",
+    ):
         self.conn = sqlite3.connect(db_path, check_same_thread=False)
         self.conn.execute("PRAGMA cache_size = -32000")
 
@@ -75,12 +82,21 @@ class SefariaSearcher:
             log.info("Loading PageRank scores from %s ...", pagerank_path)
             try:
                 df_pr = pd.read_csv(pagerank_path)
-                self.pagerank_scores = dict(zip(df_pr['Book Title'].str.strip(), df_pr['PageRank Score']))
-                log.info("Loaded PageRank scores for %d books.", len(self.pagerank_scores))
+                self.pagerank_scores = dict(
+                    zip(df_pr["Book Title"].str.strip(), df_pr["PageRank Score"])
+                )
+                log.info(
+                    "Loaded PageRank scores for %d books.", len(self.pagerank_scores)
+                )
             except Exception as e:
-                log.error("Failed to load PageRank file: %s. Defaulting to no boosts.", e)
+                log.error(
+                    "Failed to load PageRank file: %s. Defaulting to no boosts.", e
+                )
         else:
-            log.warning("PageRank file not found at %s. Weighted searches will fallback to 1.0.", pagerank_path)
+            log.warning(
+                "PageRank file not found at %s. Weighted searches will fallback to 1.0.",
+                pagerank_path,
+            )
 
     def embed_query(self, text: str) -> np.ndarray:
         vec = self.model.encode(text, normalize_embeddings=True)
@@ -102,7 +118,13 @@ class SefariaSearcher:
         query_vec = self.embed_query(query)
 
         fetch_k = (
-            10000 if addresses or book_filter or book_partial_filter or category_filter or unique else top_k
+            2000
+            if addresses
+            or book_filter
+            or book_partial_filter
+            or category_filter
+            or unique
+            else top_k
         )
 
         scores, positions = self.index.search(query_vec, fetch_k)
@@ -116,7 +138,9 @@ class SefariaSearcher:
             if pos == -1:
                 continue
             chunk_id = int(self.id_map[pos])
-            row = self._resolve_chunk(chunk_id, book_filter, book_partial_filter, category_filter)
+            row = self._resolve_chunk(
+                chunk_id, book_filter, book_partial_filter, category_filter
+            )
             if row is None:
                 continue
 
@@ -152,7 +176,11 @@ class SefariaSearcher:
         return results[:top_k]
 
     def _resolve_chunk(
-        self, chunk_id: int, book_filter: str = None, book_partial_filter: str = None, category_filter: str = None
+        self,
+        chunk_id: int,
+        book_filter: str = None,
+        book_partial_filter: str = None,
+        category_filter: str = None,
     ):
         row = self.conn.execute(
             """
@@ -218,38 +246,59 @@ class SefariaSearcher:
 
         return result
 
-    def weightify(self, unweighted_results: list[dict])->list[dict]:
+    def weightify(self, unweighted_results: list[dict]) -> list[dict]:
         for result in unweighted_results:
-            categories = result['categories']
-            categories_set = set(categories.split('|'))
-            start_score = result['score']
+            categories = result["categories"]
+            categories_set = set(categories.split("|"))
+            start_score = result["score"]
             final_score = start_score
 
             if categories_set.intersection({"Second Temple", "Reference"}):
                 final_score = 0
             elif "Tanakh" in categories_set:
-                if "Rishonim on Tanakh" in categories_set: final_score = start_score * 1.05
-                elif "Acharonim on Tanakh" in categories_set: final_score = start_score * 1.03
-                elif "Modern Commentary on Tanakh" in categories_set: final_score = 0
-                elif "Targum" in categories_set: final_score = start_score * 1.04
-                else: final_score = start_score * 1.1
+                if "Rishonim on Tanakh" in categories_set:
+                    final_score = start_score * 1.05
+                elif "Acharonim on Tanakh" in categories_set:
+                    final_score = start_score * 1.03
+                elif "Modern Commentary on Tanakh" in categories_set:
+                    final_score = 0
+                elif "Targum" in categories_set:
+                    final_score = start_score * 1.04
+                else:
+                    final_score = start_score * 1.1
             elif "Talmud" in categories_set:
                 if "Bavli" in categories_set:
-                    if "Rishonim on Talmud" in categories_set: final_score = start_score * 1.03
-                    elif "Acharonim on Talmud" in categories_set: final_score = start_score * 1.01
-                    elif "Commentary on Minor Tractates" in categories_set: final_score = start_score * 0.95
-                    elif "Guides" in categories_set: final_score = 0
-                    elif "Minor Tractates" in categories_set: final_score = start_score
-                    elif "Modern Commentary on Talmud" in categories_set: final_score = 0
-                    else: final_score = start_score * 1.08
+                    if "Rishonim on Talmud" in categories_set:
+                        final_score = start_score * 1.03
+                    elif "Acharonim on Talmud" in categories_set:
+                        final_score = start_score * 1.01
+                    elif "Commentary on Minor Tractates" in categories_set:
+                        final_score = start_score * 0.95
+                    elif "Guides" in categories_set:
+                        final_score = 0
+                    elif "Minor Tractates" in categories_set:
+                        final_score = start_score
+                    elif "Modern Commentary on Talmud" in categories_set:
+                        final_score = 0
+                    else:
+                        final_score = start_score * 1.08
                 else:
-                    final_score = start_score * 0.95 if "Commentary" in categories_set else start_score * 1.02
+                    final_score = (
+                        start_score * 0.95
+                        if "Commentary" in categories_set
+                        else start_score * 1.02
+                    )
             elif "Tosefta" in categories_set or "Midrash" in categories_set:
-                final_score = start_score * 0.95 if "Commentary" in categories else start_score
+                final_score = (
+                    start_score * 0.95 if "Commentary" in categories else start_score
+                )
             elif "Halakha" in categories_set:
-                if "Modern" in categories_set: final_score = start_score * 0.5
-                elif "Commentary" in categories: final_score = start_score
-                else: final_score = start_score * 1.04
+                if "Modern" in categories_set:
+                    final_score = start_score * 0.5
+                elif "Commentary" in categories:
+                    final_score = start_score
+                else:
+                    final_score = start_score * 1.04
             elif categories_set.intersection({"Responsa", "Musar", "Jewish Thought"}):
                 if "Modern" in categories:
                     final_score = 0
@@ -258,9 +307,15 @@ class SefariaSearcher:
                 else:
                     final_score = start_score
             elif "Mishnah" in categories_set:
-                if "Rishonim on Mishnah" in categories_set or "Acharonim on Mishnah" in categories_set: final_score = start_score * 1.01
-                elif "Modern Commentary on Mishnah" in categories_set: final_score = 0
-                else: final_score = start_score * 1.06
+                if (
+                    "Rishonim on Mishnah" in categories_set
+                    or "Acharonim on Mishnah" in categories_set
+                ):
+                    final_score = start_score * 1.01
+                elif "Modern Commentary on Mishnah" in categories_set:
+                    final_score = 0
+                else:
+                    final_score = start_score * 1.06
             else:
                 flat_weights = {"Liturgy": 0.98, "Kabbalah": 0.80, "Chasidut": 0.93}
                 has_matched = False
@@ -273,20 +328,24 @@ class SefariaSearcher:
                     final_score = start_score
 
             if self.pagerank_scores:
-                clean_book_id = result['book_id'].strip()
+                clean_book_id = result["book_id"].strip()
                 pr_score = self.pagerank_scores.get(clean_book_id, 0.0)
                 pr_boost = 1.0 + (4.5 * pr_score)
                 final_score *= pr_boost
 
-            result['score'] = final_score
+            result["score"] = final_score
         return unweighted_results
 
-    def rerank(self, query: str, results: list, top_k: int = 10, debug: bool = False) -> list:
+    def rerank(
+        self, query: str, results: list, top_k: int = 10, debug: bool = False
+    ) -> list:
         if not results:
             return results
 
         if len(results) > 200:
-            print(f"\nWarning: {len(results)} results will be cross encoded. This is a large batch and will take a long time.\n")
+            print(
+                f"\nWarning: {len(results)} results will be cross encoded. This is a large batch and will take a long time.\n"
+            )
 
         pairs = [(query, r["text"]) for r in results]
         ce_scores = self.reranker.predict(pairs, show_progress_bar=False)
@@ -300,7 +359,9 @@ class SefariaSearcher:
             print(f"{'REF':<30} {'BI-SCORE':>10} {'CE-SCORE':>10}  TEXT")
             for r in results:
                 snippet = r["text"][:80].replace("\n", " ")
-                print(f"{r['sefaria_ref']:<30} {r['bi_encoder_score']:>10.4f} {r['score']:>10.4f}  {snippet}")
+                print(
+                    f"{r['sefaria_ref']:<30} {r['bi_encoder_score']:>10.4f} {r['score']:>10.4f}  {snippet}"
+                )
 
         results.sort(key=lambda x: x["score"], reverse=True)
 
@@ -321,7 +382,7 @@ class SefariaSearcher:
         book_partial_filter: str = None,
         category_filter: str = None,
         unique: bool = False,
-        weighted: bool = True
+        weighted: bool = True,
     ):
         """
         Divides a sentence into full, halves, and quarters.
@@ -330,48 +391,49 @@ class SefariaSearcher:
         """
         words = sentence.split()
         n = len(words)
-        
+
         # If the sentence is too short, just query it whole to avoid meaningless micro-queries
         if n < 4:
             queries = [sentence]
         else:
-            q1 = " ".join(words[:n//4])
-            q2 = " ".join(words[n//4:n//2])
-            q3 = " ".join(words[n//2:3*n//4])
-            q4 = " ".join(words[3*n//4:])
-            
-            h1 = " ".join(words[:n//2])
-            h2 = " ".join(words[n//2:])
-            
+            q1 = " ".join(words[: n // 4])
+            q2 = " ".join(words[n // 4 : n // 2])
+            q3 = " ".join(words[n // 2 : 3 * n // 4])
+            q4 = " ".join(words[3 * n // 4 :])
+
+            h1 = " ".join(words[: n // 2])
+            h2 = " ".join(words[n // 2 :])
+
             queries = [sentence, h1, h2, q1, q2, q3, q4]
 
         pooled_results = {}
-        
+
         for q in queries:
             if not q.strip():
                 continue
-            
+
             res = self.search(
                 query=q,
-                top_k=50, 
+                top_k=50,
                 book_filter=book_filter,
                 book_partial_filter=book_partial_filter,
                 category_filter=category_filter,
                 unique=unique,
                 weighted=weighted,
-                rerank=False
+                rerank=False,
             )
-            
+
             for r in res:
-                if r['score'] >= threshold:
-                    if r['chunk_id'] not in pooled_results:
-                        pooled_results[r['chunk_id']] = r
+                if r["score"] >= threshold:
+                    if r["chunk_id"] not in pooled_results:
+                        pooled_results[r["chunk_id"]] = r
 
         pooled_list = list(pooled_results.values())
         pooled_list.sort(key=lambda x: x["score"], reverse=True)
         pooled_list = pooled_list[:100]
 
         return self.rerank(sentence, pooled_list, top_k=top_k)
+
 
 # ---------------------------------------------------------------------------
 # FastAPI REST Interface
@@ -512,7 +574,7 @@ def split_search_api(req: SplitSearchRequest):
             book_partial_filter=req.book_partial_filter,
             category_filter=req.category_filter,
             unique=req.unique,
-            weighted=req.weighted
+            weighted=req.weighted,
         )
     except Exception as e:
         log.exception("Split search failed for sentence %r", req.sentence)
@@ -590,10 +652,19 @@ if __name__ == "__main__":
     parser.add_argument("--category-filter", default=None)
     parser.add_argument("--unique", "-u", action="store_true", default=False)
     parser.add_argument("--weighted", "-w", action="store_true", default=False)
-    parser.add_argument("--split-search", "-s", action="store_true", default=False, 
-                        help="Enable fractional sentence search and pooling")
-    parser.add_argument("--threshold", type=float, default=0.5, 
-                        help="Score threshold when pooling results for split search")
+    parser.add_argument(
+        "--split-search",
+        "-s",
+        action="store_true",
+        default=False,
+        help="Enable fractional sentence search and pooling",
+    )
+    parser.add_argument(
+        "--threshold",
+        type=float,
+        default=0.5,
+        help="Score threshold when pooling results for split search",
+    )
     parser.add_argument("--addrs", "-a", default="-1.-1.-1.-1")
     args = parser.parse_args()
 
@@ -606,7 +677,7 @@ if __name__ == "__main__":
 
     addresses = [int(x) for x in args.addrs.split(".")]
     cli_searcher = SefariaSearcher(args.db, args.index, args.model)
-    
+
     if args.split_search:
         print(f"\nRunning Split Search on: {args.query!r}")
         results = cli_searcher.split_search(
@@ -617,7 +688,7 @@ if __name__ == "__main__":
             book_partial_filter=args.book_partial_filter,
             category_filter=args.category_filter,
             unique=args.unique,
-            weighted=args.weighted
+            weighted=args.weighted,
         )
     else:
         results = cli_searcher.search(
@@ -633,7 +704,7 @@ if __name__ == "__main__":
 
     print(f"\nQuery: {args.query!r}\n")
     for i, r in enumerate(results, 1):
-        score_val = r.get('score', 0.0)
+        score_val = r.get("score", 0.0)
         print(
             f"{i}. [{score_val:.3f}] {r['sefaria_ref']}  ({r['en_title']}, {r['language']})"
         )

@@ -1,7 +1,7 @@
 import sqlite3
 import re
 
-DB_FILE = "C:/Users/Adir/Desktop/sefaria.db"
+DB_FILE = "/path/to/sefaria.db"
 
 
 class SefariaEngineV5:
@@ -110,7 +110,7 @@ class SefariaEngineV5:
                 ]
             )
         formatted_results.sort(key=lambda x: x[1], reverse=True)
-        #return formatted_results[:num_of_results]
+        # return formatted_results[:num_of_results]
 
         curr = self.conn.cursor()
         chunk_id = formatted_results[0][0] if formatted_results else None
@@ -118,35 +118,48 @@ class SefariaEngineV5:
             return []
 
         query = """
-        SELECT 
-            c.id AS chunk_id,
-            p.book_id,
-            p.addr1,
-            p.addr2,
-            p.addr3,
-            p.addr4
-        FROM chunks c
-        JOIN passages p ON c.passage_id = p.id
-        WHERE c.id = ?;
-        """
+            SELECT
+                c.id AS chunk_id,
+                p.book_id,
+                p.addr1,
+                p.addr2,
+                p.addr3,
+                p.addr4,
+                a.he_name AS author_he_name,
+                p.sefaria_ref
+            FROM chunks c
+            JOIN passages p ON c.passage_id = p.id
+            LEFT JOIN author_book_map abm ON abm.book_id = p.book_id
+            LEFT JOIN authors a ON a.id = abm.author_id
+            WHERE c.id = ?;
+            """
 
         curr.execute(query, (chunk_id,))
 
         row = curr.fetchone()
 
-        book_id = row[1]
-        addrs = [row[2], row[3], row[4], row[5]]
-
-        formatted_book = book_id.replace(" ", "_") if book_id else ""
-        valid_addrs = [str(int(a) + 1) for a in addrs if a is not None and str(a).strip()]
-            
-        ref_parts = [formatted_book] + valid_addrs
-        sefaria_ref = ".".join(ref_parts)
-        sefaria_url = f"https://www.sefaria.org/{sefaria_ref}?lang=bi"
-
         curr.close()
 
-        return sefaria_url
+        return_dicts = []
+        num_of_outputs = 3
+
+        for idx in range(num_of_outputs):
+            return_dicts.append(
+                {
+                    "book_id": row[1],
+                    "addr1": row[2],
+                    "addr2": row[3],
+                    "addr3": row[4],
+                    "addr4": row[5],
+                    "score": formatted_results[idx][1]
+                    if formatted_results and formatted_results[idx][1] > 0.5
+                    else 0.0,
+                    "sefaria_url": f"https://www.sefaria.org/{row[7].replace(' ', '_')}",
+                    "author": re.sub(r'["״”’]', "", row[6]) if row[6] else None,
+                }
+            )
+
+        return return_dicts
 
     def close(self):
         self.conn.close()
@@ -323,11 +336,11 @@ if __name__ == "__main__":
 
     print(results)
 
-    #print("\nResults:")
-    #for row in results:
-        #print(f"Score: {row[0]} | Book ID: {row[1]} | {row[4]}")
-        #print(f"Match Context: {row[2]}")
-        #print(f"Coordinates: {row[3]}")
-        #print("-" * 50)
+    # print("\nResults:")
+    # for row in results:
+    # print(f"Score: {row[0]} | Book ID: {row[1]} | {row[4]}")
+    # print(f"Match Context: {row[2]}")
+    # print(f"Coordinates: {row[3]}")
+    # print("-" * 50)
 
     engine.close()

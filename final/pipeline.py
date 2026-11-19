@@ -788,7 +788,7 @@ Good afternoon everybody. So a little bit of a lighter topic today and that is t
     """
     results = find_links(
         transcript=transcript,
-        db_path="/home/zelfinit/CS/sofer/sefaria/sefaria.db",
+        db_path="/path/to/sefaria.db",
         sefaria_base_url="http://127.0.0.1:8000",
     )
     out = [

@@ -13,8 +13,8 @@ from CitationClassifier import CitationClassifier
 from FuzzyMatch import SefariaEngineV5
 import re
 
-GEMINI_API_KEY = "AIzaSyDggnni7-_UZH9QQtru-zU3rrTimnFmYR8"
-DB_PATH = "/home/zelfinit/CS/sofer/sefaria/sefaria.db"
+GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"
+DB_PATH = "/path/to/sefaria.db"
 
 
 def split_into_sentences(transcript: str):
@@ -87,6 +87,7 @@ def score_candidate(candidate: dict, window_ner: list[dict], db_cursor) -> float
     candidate_author = candidate.get("author")
     candidate_title = candidate.get("book_id")
     score = candidate.get("score")
+    matches = 0
     for entry in window_ner:
         if not entry:
             continue
@@ -94,11 +95,11 @@ def score_candidate(candidate: dict, window_ner: list[dict], db_cursor) -> float
             if candidate_author is not None and match_authors(
                 candidate_author, entry["TITLE"]
             ):
-                score += score * 0.1
+                matches += 1
             elif are_titles_same_book(
                 db_cursor=db_cursor, title_a=candidate_title, title_b=entry["TITLE"]
             ):
-                score += score * 0.1
+                matches += 1
         if entry.get("PATH"):
             path = entry["PATH"]
             if path is not None:
@@ -107,7 +108,7 @@ def score_candidate(candidate: dict, window_ner: list[dict], db_cursor) -> float
                         candidate[addr_field] is not None
                         and path == candidate[addr_field]
                     ):
-                        score += score * 0.1
+                        matches += 1
     candidate["score"] = score
     return score
 
@@ -132,8 +133,11 @@ def find_links(transcript: str, db_cursor):
     # Filter to only citation sentences
     classifier = CitationClassifier()
     citation_sentences = classifier.classify_sentences(transliterated_sentences)
+    for sentence in citation_sentences:
+        print(sentence["text"])
     fuzzy = SefariaEngineV5()
     # Send to Gemini to add query field
+    print("Sending sources to Gemini")
     GQE = GeminiQuoteExtractor(GEMINI_API_KEY)
     citation_sentences = GQE.extract_queries(citation_sentences)
     ner_extractor = NERExtractor("./NER/")
@@ -149,11 +153,10 @@ def find_links(transcript: str, db_cursor):
             sentence["fuzzyMatches"] = fuzzy_results
         results_for_sentence = []
         for query in sentence["queries"]:
+            print("Sending sentence to api", sentence["text"], query)
             payload = {
-                "query": query,
-                "top_k": 20,
                 "unique": True,
-                "rerank_pool_size": 100,
+                "query": query,
             }
             try:
                 response = requests.post(
@@ -194,7 +197,12 @@ def find_links(transcript: str, db_cursor):
                 boosted_score = score_candidate(hit, window_ner, db_cursor)
                 hit["final_score"] = boosted_score
             api_call_results.sort(key=lambda c: c["final_score"], reverse=True)
-            links.append(api_call_results[0].get("sefaria_url"))
+            link = api_call_results[0].get("sefaria_url")
+            high_score = api_call_results[0]["final_score"]
+            if link not in links and high_score > 0.5:
+                print(link, high_score)
+                print(api_call_results[0].get("text"))
+                links.append(link)
 
         # 3. Score Fuzzy matches
         for fuzzy_match_results in current_sent.get("fuzzyMatches", []):
@@ -204,10 +212,27 @@ def find_links(transcript: str, db_cursor):
                 boosted_score = score_candidate(hit, window_ner, db_cursor)
                 hit["final_score"] = boosted_score
             fuzzy_match_results.sort(key=lambda c: c["final_score"], reverse=True)
-            links.append(fuzzy_match_results[0].get("sefaria_url"))
+            link = fuzzy_match_results[0].get("sefaria_url")
+            high_score = fuzzy_match_results[0]["final_score"]
+            if link not in links and high_score > 0.5:
+                print(link, high_score)
+                links.append(link)
         current_sent["links"] = links
     # convert to html with footnotes
     return merge_footnotes(sentences, citation_sentences)
+
+
+def wrap_hebrew(text):
+    pattern = re.compile(
+        r"([\u0590-\u05FF]+(?:[\s.,:;!\'-]+[\u0590-\u05FF]+)*)([.!?]?)"
+    )
+
+    def replace_match(m):
+        hebrew_content = m.group(1)
+        punctuation = m.group(2)
+        return f'<span dir="rtl" lang="he">{hebrew_content}</span>{punctuation}'
+
+    return pattern.sub(replace_match, text)
 
 
 def merge_footnotes(sentences, links_data):
@@ -220,14 +245,20 @@ def merge_footnotes(sentences, links_data):
 
     # Process each sentence in index order
     for sentence in sorted(sentences, key=lambda x: x["index"]):
-        text = sentence["text"]
+        text = wrap_hebrew(sentence["text"])
         sentence_links = links_by_index.get(sentence["index"], [])
 
         # Iterate over the list of links for this sentence
         for link in sentence_links:
-            text += f'<sup><a href="#fn{footnote_count}">[{footnote_count}]</a></sup>'
-            footnotes.append(f'<li id="fn{footnote_count}">{link}</li>')
-            footnote_count += 1
+            if link:
+                # Add superscript tag in paragraph pointing directly to external link
+                text += f'<sup><a href="{link}" target="_blank" rel="noopener noreferrer">[{footnote_count}]</a></sup>'
+
+                # Add hyperlinked list item in footnotes section
+                footnotes.append(
+                    f'<li id="fn{footnote_count}"><a href="{link}" target="_blank" rel="noopener noreferrer">{link}</a></li>'
+                )
+                footnote_count += 1
 
         processed_sentences.append(text)
 

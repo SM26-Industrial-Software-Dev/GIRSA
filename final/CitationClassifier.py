@@ -4,7 +4,7 @@ from fastai.text.all import load_learner
 
 
 class CitationClassifier:
-    def __init__(self, model_path="citation_classifier.pkl"):
+    def __init__(self, model_path="./citation_classifier.pkl"):
         """
         Load the trained FastAI classifier once.
         """
@@ -23,13 +23,10 @@ class CitationClassifier:
         text = re.sub(r"\s+", " ", text).strip()
 
         # Split into sentences
-        sentences = re.split(r'(?<=[.!?])\s+', text)
+        sentences = re.split(r"(?<=[.!?])\s+", text)
 
         return [
-            {
-                "index": i,
-                "text": sentence.strip()
-            }
+            {"index": i, "text": sentence.strip()}
             for i, sentence in enumerate(sentences)
             if sentence.strip()
         ]
@@ -77,7 +74,6 @@ class CitationClassifier:
 
 
 if __name__ == "__main__":
-
     classifier = CitationClassifier()
 
     transcript = """
@@ -94,3 +90,4 @@ if __name__ == "__main__":
         json.dump(citations, f, indent=2, ensure_ascii=False)
 
     print("Saved citations to citations.json")
+
